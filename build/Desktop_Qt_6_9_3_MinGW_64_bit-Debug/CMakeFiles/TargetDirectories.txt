@@ -1,0 +1,5 @@
+D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/CMakeFiles/QuanLyThueSanQt.dir
+D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/CMakeFiles/QuanLyThueSanQt_autogen_timestamp_deps.dir
+D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/CMakeFiles/QuanLyThueSanQt_autogen.dir
