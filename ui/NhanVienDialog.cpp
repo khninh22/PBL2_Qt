@@ -7,6 +7,22 @@ NhanVienDialog::NhanVienDialog(QWidget *parent, NhanVien *nv)
 {
     setWindowTitle(nv ? "Sửa Nhân Viên" : "Thêm Nhân Viên Mới");
     setMinimumWidth(400);
+    
+    // ✅ Cải thiện UI
+    setStyleSheet(
+        "QDialog { background-color: #f5f5f5; }"
+        "QPushButton {"
+        "    background-color: #2196F3; color: white; border: none;"
+        "    padding: 10px 24px; border-radius: 5px; font-weight: bold;"
+        "    font-size: 13px; min-width: 100px;"
+        "}"
+        "QPushButton:hover { background-color: #1976D2; }"
+        "QLineEdit, QComboBox {"
+        "    padding: 8px; border: 2px solid #BDBDBD; border-radius: 4px;"
+        "    background-color: white; font-size: 13px;"
+        "}"
+        "QLineEdit:focus, QComboBox:focus { border: 2px solid #2196F3; }"
+    );
 
     QFormLayout *formLayout = new QFormLayout();
 

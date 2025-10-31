@@ -11,6 +11,8 @@
 #include <QStackedWidget>
 #include <QFrame>
 #include <QPropertyAnimation>
+#include <QComboBox>
+#include <QDateEdit>
 #include "../core/QuanLyThueSan.h"
 #include "../core/AuthManager.h"
 
@@ -144,11 +146,32 @@ private:
     QPushButton *btnSuaNV;
     QPushButton *btnXoaNV;
 
-    // Thống kê
+    // Thống kê cơ bản (tab cũ)
     QLabel *lblDoanhThuNgay;
     QLabel *lblDoanhThuThang;
     QLabel *lblTongSan;
     QLabel *lblTongKhach;
+    
+    // ✅ MỚI: Thống kê nâng cao
+    QComboBox *cboKhoangThoiGian;  // Chọn: Ngày/Tuần/Tháng/Quý/Năm/Tùy chỉnh
+    QDateEdit *dateFrom;
+    QDateEdit *dateTo;
+    QPushButton *btnThongKe;
+    
+    // Hiển thị doanh thu theo khoảng
+    QLabel *lblDoanhThuKhoang;
+    QLabel *lblTongBooking;
+    QLabel *lblDoanhThuTB;
+    QLabel *lblTyLeHuy;
+    
+    // Bảng thống kê sân
+    QTableWidget *tableThongKeSan;
+    
+    // Bảng khung giờ hot
+    QTableWidget *tableKhungGio;
+    
+    // Bảng Top khách hàng VIP
+    QTableWidget *tableTopKhach;
 };
 
 #endif // MAINWINDOW_H

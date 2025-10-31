@@ -4,6 +4,8 @@
 #include "SanBookingDialog.h"
 #include "DichVuDialog.h"
 #include "NhanVienDialog.h"
+#include "PaymentDialog.h"
+#include "ThongKeDialog.h"
 #include <QMenuBar>
 #include <QToolBar>
 #include <QStatusBar>
@@ -69,41 +71,67 @@ void MainWindow::setupUI()
         "    background-color: #f5f5f5;"
         "}"
         "QPushButton {"
-        "    background-color: #4CAF50;"
-        "    color: white;"
-        "    border: none;"
-        "    padding: 10px 16px;"
-        "    border-radius: 6px;"
+        "    background-color: #e3f2fd;"
+        "    color: #1976d2;"
+        "    border: 2px solid #2196F3;"  /* ✅ Viền rõ ngay từ đầu */
+        "    padding: 12px 24px;"  /* ✅ Padding lớn hơn */
+        "    border-radius: 8px;"  /* ✅ Bo góc rõ hơn */
         "    font-weight: bold;"
-        "    font-size: 13px;"
+        "    font-size: 14px;"
+        "    min-height: 40px;"  /* ✅ Nút cao hơn */
+        "    min-width: 140px;"  /* ✅ Nút rộng hơn */
+        "    outline: none;"  /* ✅ Không vòng tròn */
         "}"
         "QPushButton:hover {"
-        "    background-color: #45a049;"
+        "    background-color: #bbdefb;"
+        "    border: 3px solid #1976D2;"  /* ✅ Viền dày hơn khi hover */
+        "    transform: translateY(-2px);"  /* ✅ Nút nâng lên */
         "}"
         "QPushButton:pressed {"
-        "    background-color: #3d8b40;"
+        "    background-color: #90caf9;"
+        "    border: 2px solid #0d47a1;"
+        "    transform: translateY(0px);"  /* ✅ Nút ấn xuống */
+        "}"
+        "QPushButton:focus {"
+        "    outline: none;"  /* ✅ KHÔNG vòng tròn khi focus */
         "}"
         "QPushButton[class='delete'] {"
-        "    background-color: #f44336;"
+        "    background-color: #ffebee;"
+        "    color: #c62828;"
+        "    border: 2px solid #ef5350;"  /* ✅ Viền đỏ rõ */
         "}"
         "QPushButton[class='delete']:hover {"
-        "    background-color: #da190b;"
+        "    background-color: #ffcdd2;"
+        "    border: 3px solid #c62828;"  /* ✅ Viền dày hơn */
+        "    transform: translateY(-2px);"
+        "}"
+        "QPushButton[class='delete']:pressed {"
+        "    background-color: #ef9a9a;"
+        "    border: 2px solid #b71c1c;"
+        "    transform: translateY(0px);"
+        "}"
+        "QPushButton[class='delete']:focus {"
+        "    outline: none;"  /* ✅ KHÔNG vòng tròn */
         "}"
         "QTableWidget {"
         "    border: 1px solid #ddd;"
-        "    gridline-color: #e0e0e0;"
-        "    selection-background-color: #4CAF50;"
+        "    gridline-color: #ddd;"
+        "    selection-background-color: #0078d7;"
+        "    selection-color: white;"
         "    background-color: white;"
-        "    border-radius: 8px;"
+        "    outline: none;"  /* ✅ KHÔNG vòng tròn cho table */
         "}"
-        "QTableWidget::item {"
-        "    padding: 8px;"
+        "QTableWidget::item:selected {"
+        "    background-color: #0078d7;"
+        "    color: white;"
+        "}"
+        "QTableWidget:focus {"
+        "    outline: none;"  /* ✅ KHÔNG vòng tròn khi table focus */
         "}"
         "QHeaderView::section {"
-        "    background-color: #4CAF50;"
-        "    color: white;"
-        "    padding: 10px;"
-        "    border: none;"
+        "    background-color: #f0f0f0;"
+        "    padding: 5px;"
+        "    border: 1px solid #ddd;"
         "    font-weight: bold;"
         "}");
 }
@@ -558,11 +586,6 @@ QWidget *MainWindow::createLichDatPage()
     // Buttons
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnDatSan = new QPushButton("📅 Đặt Sân");
-    btnDatSan->setStyleSheet(
-        "background-color: #2196F3; "
-        "font-size: 14px; "
-        "padding: 10px 20px; "
-        "border-radius: 5px;");
     btnHuyLich = new QPushButton("🚫 Hủy Lịch");
     btnThanhToan = new QPushButton("💰 Thanh Toán");
 
@@ -573,19 +596,21 @@ QWidget *MainWindow::createLichDatPage()
 
     // Table
     tableLichDat = new QTableWidget();
-    tableLichDat->setColumnCount(8);
-    tableLichDat->setHorizontalHeaderLabels({"Mã Lịch", "Mã KH", "Mã Sân", "Bắt Đầu", "Kết Thúc",
-                                             "Tổng Tiền", "TT Đặt", "TT Thanh Toán"});
+    tableLichDat->setColumnCount(10);
+    tableLichDat->setHorizontalHeaderLabels({"Mã Lịch", "Mã KH", "Tên KH", "SĐT", "Mã Sân", 
+                                             "Bắt Đầu", "Kết Thúc", "Tổng Tiền", "TT Đặt", "TT Thanh Toán"});
     
     // Thiết lập độ rộng cột
-    tableLichDat->setColumnWidth(0, 80);   // Mã Lịch
-    tableLichDat->setColumnWidth(1, 80);   // Mã KH
-    tableLichDat->setColumnWidth(2, 80);   // Mã Sân
-    tableLichDat->setColumnWidth(3, 140);  // Bắt Đầu
-    tableLichDat->setColumnWidth(4, 140);  // Kết Thúc
-    tableLichDat->setColumnWidth(5, 110);  // Tổng Tiền
-    tableLichDat->setColumnWidth(6, 100);  // TT Đặt (Trạng thái đặt)
-    tableLichDat->setColumnWidth(7, 130);  // TT Thanh Toán
+    tableLichDat->setColumnWidth(0, 70);   // Mã Lịch
+    tableLichDat->setColumnWidth(1, 60);   // Mã KH
+    tableLichDat->setColumnWidth(2, 130);  // Tên KH
+    tableLichDat->setColumnWidth(3, 100);  // SĐT
+    tableLichDat->setColumnWidth(4, 70);   // Mã Sân
+    tableLichDat->setColumnWidth(5, 120);  // Bắt Đầu
+    tableLichDat->setColumnWidth(6, 120);  // Kết Thúc
+    tableLichDat->setColumnWidth(7, 100);  // Tổng Tiền
+    tableLichDat->setColumnWidth(8, 90);   // TT Đặt (Trạng thái đặt)
+    tableLichDat->setColumnWidth(9, 120);  // TT Thanh Toán
     
     tableLichDat->horizontalHeader()->setStretchLastSection(true);
     tableLichDat->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -724,6 +749,35 @@ QWidget *MainWindow::createThongKePage()
     grid->addWidget(lblTongKhach, 3, 1);
 
     layout->addWidget(groupBox);
+    
+    // ✅ MỚI: Button mở thống kê nâng cao
+    QPushButton *btnThongKeNangCao = new QPushButton("📊 Xem Thống Kê Nâng Cao");
+    btnThongKeNangCao->setStyleSheet(
+        "QPushButton {"
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4CAF50, stop:1 #2E7D32);"
+        "   color: white;"
+        "   font-size: 16px;"
+        "   font-weight: bold;"
+        "   padding: 15px 30px;"
+        "   border-radius: 8px;"
+        "   border: none;"
+        "}"
+        "QPushButton:hover {"
+        "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #66BB6A, stop:1 #388E3C);"
+        "}"
+        "QPushButton:pressed {"
+        "   background: #1B5E20;"
+        "}"
+    );
+    btnThongKeNangCao->setCursor(Qt::PointingHandCursor);
+    
+    connect(btnThongKeNangCao, &QPushButton::clicked, this, [this]() {
+        ThongKeDialog *dialog = new ThongKeDialog(quanLy, this);
+        dialog->exec();
+        delete dialog;
+    });
+    
+    layout->addWidget(btnThongKeNangCao, 0, Qt::AlignCenter);
     layout->addStretch();
 
     return widget;
@@ -778,18 +832,45 @@ void MainWindow::updateLichDatTable()
         int row = tableLichDat->rowCount();
         tableLichDat->insertRow(row);
 
+        // Lấy thông tin khách hàng
+        KhachHang *kh = quanLy->timKhachHang(lich.getMaKH());
+        QString tenKH = kh ? QString::fromStdString(kh->getHoTen()) : "N/A";
+        QString sdtKH = kh ? QString::fromStdString(kh->getSdt()) : "N/A";
+
         tableLichDat->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(lich.getMaLichDat())));
         tableLichDat->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(lich.getMaKH())));
-        tableLichDat->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(lich.getMaSan())));
+        tableLichDat->setItem(row, 2, new QTableWidgetItem(tenKH));
+        tableLichDat->setItem(row, 3, new QTableWidgetItem(sdtKH));
+        tableLichDat->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(lich.getMaSan())));
 
         QString batDau = QString::fromStdString(formatTime(lich.getThoiGianBatDau()));
         QString ketThuc = QString::fromStdString(formatTime(lich.getThoiGianKetThuc()));
 
-        tableLichDat->setItem(row, 3, new QTableWidgetItem(batDau));
-        tableLichDat->setItem(row, 4, new QTableWidgetItem(ketThuc));
-        tableLichDat->setItem(row, 5, new QTableWidgetItem(QString::number(lich.getTongTien(), 'f', 0) + " VNĐ"));
-        tableLichDat->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiDat())));
-        tableLichDat->setItem(row, 7, new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiTT())));
+        tableLichDat->setItem(row, 5, new QTableWidgetItem(batDau));
+        tableLichDat->setItem(row, 6, new QTableWidgetItem(ketThuc));
+        tableLichDat->setItem(row, 7, new QTableWidgetItem(QString("%L1 VNĐ").arg(lich.getTongTien(), 0, 'f', 0)));
+        
+        // Trạng thái đặt với màu
+        QTableWidgetItem *itemTTDat = new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiDat()));
+        if (lich.getTrangThaiDat() == "Đã Hủy")
+            itemTTDat->setForeground(QBrush(QColor("#f44336")));
+        else
+            itemTTDat->setForeground(QBrush(QColor("#4CAF50")));
+        tableLichDat->setItem(row, 8, itemTTDat);
+        
+        // Trạng thái thanh toán với màu
+        QTableWidgetItem *itemTTTT = new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiTT()));
+        if (lich.getTrangThaiTT() == "Đã Thanh Toán")
+        {
+            itemTTTT->setForeground(QBrush(QColor("#4CAF50")));
+            itemTTTT->setBackground(QBrush(QColor("#E8F5E9")));
+        }
+        else
+        {
+            itemTTTT->setForeground(QBrush(QColor("#FF9800")));
+            itemTTTT->setBackground(QBrush(QColor("#FFF3E0")));
+        }
+        tableLichDat->setItem(row, 9, itemTTTT);
     }
 }
 
@@ -1072,34 +1153,17 @@ void MainWindow::onHuyLich()
 
 void MainWindow::onThanhToan()
 {
-    int row = tableLichDat->currentRow();
-    if (row < 0)
-    {
-        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn lịch cần thanh toán!");
-        return;
-    }
-
-    QString maLich = tableLichDat->item(row, 0)->text();
-    double tongTien, giamGia;
-
-    if (quanLy->thanhToan(maLich.toStdString(), tongTien, giamGia))
-    {
-        QString msg = QString("Thanh toán thành công!\n\n"
-                              "Tổng tiền: %1 VNĐ\n"
-                              "Giảm giá: %2 VNĐ\n"
-                              "Thành tiền: %3 VNĐ")
-                          .arg(tongTien + giamGia, 0, 'f', 0)
-                          .arg(giamGia, 0, 'f', 0)
-                          .arg(tongTien, 0, 'f', 0);
-
-        QMessageBox::information(this, "Thành công", msg);
+    // ✅ Mở PaymentDialog mới với hiển thị hóa đơn đầy đủ và xuất PDF
+    PaymentDialog dialog(quanLy, this);
+    
+    // ✅ Connect signal để refresh ngay khi thanh toán thành công
+    connect(&dialog, &PaymentDialog::paymentCompleted, this, [this]() {
         updateLichDatTable();
+        updateKhachHangTable();
         updateThongKeDisplay();
-    }
-    else
-    {
-        QMessageBox::warning(this, "Lỗi", "Không thể thanh toán lịch này!");
-    }
+    });
+    
+    dialog.exec();
 }
 
 void MainWindow::onRefreshLichDat()

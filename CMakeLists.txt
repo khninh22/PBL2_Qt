@@ -10,7 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Find Qt6
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets PrintSupport)
 
 # Core sources
 set(CORE_SOURCES
@@ -22,6 +22,13 @@ set(CORE_SOURCES
     core/NhanVien.cpp
     core/QuanLyThueSan.cpp
     core/AuthManager.cpp
+    # ✅ NEW: Manager Pattern - Single Responsibility
+    core/managers/SanBongManager.cpp
+    core/managers/KhachHangManager.cpp
+    core/managers/LichDatManager.cpp
+    core/managers/DichVuManager.cpp
+    core/managers/NhanVienManager.cpp
+    core/managers/ThanhToanManager.cpp
 )
 
 set(CORE_HEADERS
@@ -34,6 +41,13 @@ set(CORE_HEADERS
     core/QuanLyThueSan.h
     core/MangDong.h
     core/AuthManager.h
+    # ✅ NEW: Manager Pattern Headers
+    core/managers/SanBongManager.h
+    core/managers/KhachHangManager.h
+    core/managers/LichDatManager.h
+    core/managers/DichVuManager.h
+    core/managers/NhanVienManager.h
+    core/managers/ThanhToanManager.h
 )
 
 # UI sources
@@ -47,6 +61,8 @@ set(UI_SOURCES
     ui/DichVuDialog.cpp
     ui/NhanVienDialog.cpp
     ui/LoginDialog.cpp
+    ui/PaymentDialog.cpp
+    ui/ThongKeDialog.cpp
 )
 
 set(UI_HEADERS
@@ -59,6 +75,8 @@ set(UI_HEADERS
     ui/DichVuDialog.h
     ui/NhanVienDialog.h
     ui/LoginDialog.h
+    ui/PaymentDialog.h
+    ui/ThongKeDialog.h
 )
 
 # Main executable
@@ -70,7 +88,7 @@ add_executable(${PROJECT_NAME}
     ${UI_HEADERS}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets Qt6::PrintSupport)
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PRIVATE

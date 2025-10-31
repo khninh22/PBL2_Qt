@@ -7,6 +7,22 @@ KhachHangDialog::KhachHangDialog(QWidget *parent, KhachHang *kh)
 {
     setWindowTitle(kh ? "Sửa Khách Hàng" : "Thêm Khách Hàng Mới");
     setMinimumWidth(400);
+    
+    // ✅ Cải thiện UI
+    setStyleSheet(
+        "QDialog { background-color: #f5f5f5; }"
+        "QPushButton {"
+        "    background-color: #2196F3; color: white; border: none;"
+        "    padding: 10px 24px; border-radius: 5px; font-weight: bold;"
+        "    font-size: 13px; min-width: 100px;"
+        "}"
+        "QPushButton:hover { background-color: #1976D2; }"
+        "QLineEdit {"
+        "    padding: 8px; border: 2px solid #BDBDBD; border-radius: 4px;"
+        "    background-color: white; font-size: 13px;"
+        "}"
+        "QLineEdit:focus { border: 2px solid #2196F3; }"
+    );
 
     QFormLayout *formLayout = new QFormLayout();
 

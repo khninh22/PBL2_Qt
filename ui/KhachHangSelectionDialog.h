@@ -12,6 +12,7 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QLabel>
+#include <QDate>
 #include "../core/QuanLyThueSan.h"
 #include "../core/DichVu.h"
 
@@ -32,15 +33,23 @@ struct DichVuInfo
     }
 };
 
+// ✅ Struct để lưu thông tin sân đã chọn
+struct BookingSlot
+{
+    QString maSan;
+    QString tenSan;
+    QString thoiGian; // VD: "06:00 - 07:30"
+    double soGio;
+    double giaTien;
+};
+
 /**
- * Dialog thống nhất cho phép:
- * TAB 1 - KHÁCH HÀNG:
- *   1. Chọn khách hàng có sẵn từ danh sách
- *   2. Thêm khách hàng mới với đầy đủ thông tin
- * TAB 2 - DỊCH VỤ:
- *   3. Chọn dịch vụ cần sử dụng (không bắt buộc)
+ * Dialog HOÀN CHỈNH cho quy trình đặt sân:
+ * TAB 1 - KHÁCH HÀNG: Chọn KH có sẵn hoặc thêm mới
+ * TAB 2 - DỊCH VỤ: Chọn dịch vụ (tùy chọn)
+ * TAB 3 - TÓM TẮT: Xem thông tin đầy đủ và xác nhận
  *
- * Flow: Đặt sân -> Dialog này (KH + DV) -> Xác nhận
+ * Flow: Đặt sân -> Dialog này (KH + DV + Tóm tắt) -> XÁC NHẬN LƯU LUÔN
  */
 class KhachHangSelectionDialog : public QDialog
 {
@@ -61,29 +70,46 @@ public:
     QList<DichVuInfo> getSelectedDichVu() const { return selectedDichVu; }
     double getTongTienDichVu() const { return tongTienDichVu; }
 
+    /**
+     * ✅ Truyền thông tin đặt sân từ SanBookingDialog
+     */
+    void setBookingInfo(const QDate &ngayDat, const QList<BookingSlot> &slotList);
+    
+    /**
+     * ✅ Kiểm tra xem đã xác nhận đặt sân hay chưa
+     */
+    bool isBookingConfirmed() const { return bookingConfirmed; }
+
 private slots:
     // Tab Khách hàng
     void onModeChanged();
-    void onConfirm();
     void onSearchKhachHang();
     
     // Tab Dịch vụ
     void onDichVuCheckChanged(Qt::CheckState state);
     void onDichVuSpinChanged(int value);
+    
+    // ✅ Tab Tóm tắt & Xác nhận
+    void onNextToSummary(); // Chuyển sang tab tóm tắt
+    void onConfirmBooking(); // Xác nhận đặt sân (lưu vào DB)
 
 private:
     void setupUI();
     void setupTabKhachHang();
     void setupTabDichVu();
+    void setupTabTomTat(); // ✅ Tab 3: Tóm tắt
     
     bool validateNewCustomer();
+    bool validateCustomerSelection(); // ✅ Validate trước khi chuyển tab
     QString generateMaKH(); // Tự động tạo mã KH mới
     
     void loadDichVu();
     void updateDichVuTongTien();
+    void updateSummary(); // ✅ Cập nhật nội dung tab tóm tắt
 
     QuanLyThueSan *quanLy;
     QString selectedMaKH;
+    bool bookingConfirmed; // ✅ Đánh dấu đã xác nhận đặt sân
 
     // Main layout
     QTabWidget *tabWidget;
@@ -116,9 +142,20 @@ private:
     MangDong<DichVu> dsDichVu;
     QList<DichVuInfo> selectedDichVu;
     double tongTienDichVu;
+    
+    // ========== TAB 3: TÓM TẮT ==========
+    QWidget *tabTomTat;
+    QLabel *lblTomTatNoiDung; // Hiển thị HTML tóm tắt đầy đủ
+    QLabel *lblTongThanhToan;  // Tổng tiền lớn, nổi bật
+    
+    // ✅ Thông tin đặt sân được truyền từ SanBookingDialog
+    QDate ngayDat;
+    QList<BookingSlot> bookingSlots;
+    double tongTienSan; // Tổng tiền sân (trước giảm giá)
 
     // Buttons
-    QPushButton *btnConfirm;
+    QPushButton *btnNext;      // "Tiếp tục →" (hiện ở tab 1 và 2)
+    QPushButton *btnConfirm;   // "✅ Xác nhận đặt sân" (hiện ở tab 3)
     QPushButton *btnCancel;
 };
 

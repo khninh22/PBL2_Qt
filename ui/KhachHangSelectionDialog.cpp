@@ -7,12 +7,14 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 #include <QHeaderView>
+#include <QScrollArea>
 
 KhachHangSelectionDialog::KhachHangSelectionDialog(QuanLyThueSan *ql, QWidget *parent)
-    : QDialog(parent), quanLy(ql), selectedMaKH(""), tongTienDichVu(0.0)
+    : QDialog(parent), quanLy(ql), selectedMaKH(""), tongTienDichVu(0.0), 
+      tongTienSan(0.0), bookingConfirmed(false)
 {
     setWindowTitle("📋 Thông Tin Đặt Sân");
-    setMinimumSize(800, 600);
+    setMinimumSize(900, 650);
     setupUI();
 }
 
@@ -43,9 +45,14 @@ void KhachHangSelectionDialog::setupUI()
 
     setupTabKhachHang();
     setupTabDichVu();
+    setupTabTomTat(); // ✅ Tab 3
 
-    tabWidget->addTab(tabKhachHang, "👤 Khách Hàng");
-    tabWidget->addTab(tabDichVu, "🎯 Dịch Vụ");
+    tabWidget->addTab(tabKhachHang, "👤 1. Khách Hàng");
+    tabWidget->addTab(tabDichVu, "🎯 2. Dịch Vụ");
+    tabWidget->addTab(tabTomTat, "📋 3. Tóm Tắt");
+    
+    // ✅ Vô hiệu hóa tab 3 ban đầu (chỉ mở khi có booking info)
+    tabWidget->setTabEnabled(2, false);
 
     mainLayout->addWidget(tabWidget);
     mainLayout->addSpacing(15);
@@ -60,23 +67,40 @@ void KhachHangSelectionDialog::setupUI()
         "QPushButton { background-color: #e74c3c; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px; }"
         "QPushButton:hover { background-color: #c0392b; }"
     );
+    connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
 
-    btnConfirm = new QPushButton("✅ Xác Nhận");
-    btnConfirm->setMinimumSize(120, 40);
+    btnNext = new QPushButton("Tiếp tục →");
+    btnNext->setMinimumSize(150, 40);
+    btnNext->setStyleSheet(
+        "QPushButton { background-color: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px; }"
+        "QPushButton:hover { background-color: #2980b9; }"
+    );
+    connect(btnNext, &QPushButton::clicked, this, &KhachHangSelectionDialog::onNextToSummary);
+
+    btnConfirm = new QPushButton("✅ Xác Nhận Đặt Sân");
+    btnConfirm->setMinimumSize(180, 40);
     btnConfirm->setStyleSheet(
-        "QPushButton { background-color: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 13px; }"
+        "QPushButton { background-color: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 14px; }"
         "QPushButton:hover { background-color: #229954; }"
     );
+    btnConfirm->setVisible(false); // Chỉ hiện ở tab 3
+    connect(btnConfirm, &QPushButton::clicked, this, &KhachHangSelectionDialog::onConfirmBooking);
 
     buttonLayout->addWidget(btnCancel);
-    buttonLayout->addSpacing(15);
+    buttonLayout->addWidget(btnNext);
     buttonLayout->addWidget(btnConfirm);
 
     mainLayout->addLayout(buttonLayout);
-
-    // CONNECTIONS
-    connect(btnCancel, &QPushButton::clicked, this, &QDialog::reject);
-    connect(btnConfirm, &QPushButton::clicked, this, &KhachHangSelectionDialog::onConfirm);
+    
+    // ✅ Thay đổi nút khi chuyển tab
+    connect(tabWidget, &QTabWidget::currentChanged, this, [this](int index) {
+        btnNext->setVisible(index < 2);
+        btnConfirm->setVisible(index == 2);
+        
+        if (index == 2) {
+            updateSummary(); // Cập nhật tóm tắt khi vào tab 3
+        }
+    });
 }
 
 void KhachHangSelectionDialog::setupTabKhachHang()
@@ -401,31 +425,6 @@ void KhachHangSelectionDialog::onDichVuSpinChanged(int value)
     updateDichVuTongTien();
 }
 
-void KhachHangSelectionDialog::onConfirm()
-{
-    // Validate khách hàng
-    if (rbChonCoSan->isChecked())
-    {
-        if (!cboKhachHang->isEnabled() || cboKhachHang->currentData().toString().isEmpty())
-        {
-            QMessageBox::warning(this, "⚠️ Cảnh báo", "Vui lòng chọn khách hàng!");
-            tabWidget->setCurrentIndex(0);
-            return;
-        }
-        selectedMaKH = cboKhachHang->currentData().toString();
-    }
-    else
-    {
-        if (!validateNewCustomer())
-        {
-            tabWidget->setCurrentIndex(0);
-            return;
-        }
-    }
-
-    accept();
-}
-
 bool KhachHangSelectionDialog::validateNewCustomer()
 {
     QString hoTen = txtHoTen->text().trimmed();
@@ -494,4 +493,197 @@ QString KhachHangSelectionDialog::generateMaKH()
     }
 
     return QString("KH%1").arg(maxNum + 1, 3, 10, QChar('0'));
+}
+
+// ===== TAB 3: TÓM TẮT =====
+void KhachHangSelectionDialog::setupTabTomTat()
+{
+    tabTomTat = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(tabTomTat);
+    layout->setSpacing(15);
+    
+    QLabel *lblHeader = new QLabel("📋 XÁC NHẬN THÔNG TIN ĐẶT SÂN");
+    lblHeader->setAlignment(Qt::AlignCenter);
+    lblHeader->setStyleSheet(
+        "font-size: 16px; font-weight: bold; color: #1976D2; "
+        "padding: 12px; background-color: #E3F2FD; border-radius: 5px;"
+    );
+    layout->addWidget(lblHeader);
+    
+    // Nội dung tóm tắt
+    lblTomTatNoiDung = new QLabel();
+    lblTomTatNoiDung->setWordWrap(true);
+    lblTomTatNoiDung->setTextFormat(Qt::RichText);
+    lblTomTatNoiDung->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    lblTomTatNoiDung->setStyleSheet(
+        "background-color: white; padding: 20px; border: 2px solid #ddd; "
+        "border-radius: 8px; font-size: 13px; line-height: 1.6;"
+    );
+    
+    QScrollArea *scrollArea = new QScrollArea();
+    scrollArea->setWidget(lblTomTatNoiDung);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setMinimumHeight(350);
+    layout->addWidget(scrollArea);
+    
+    // Tổng thanh toán (nổi bật)
+    lblTongThanhToan = new QLabel();
+    lblTongThanhToan->setAlignment(Qt::AlignCenter);
+    lblTongThanhToan->setStyleSheet(
+        "font-size: 20px; font-weight: bold; color: white; "
+        "background-color: #27ae60; padding: 15px; border-radius: 8px;"
+    );
+    layout->addWidget(lblTongThanhToan);
+}
+
+void KhachHangSelectionDialog::setBookingInfo(const QDate &ngay, const QList<BookingSlot> &slotList)
+{
+    ngayDat = ngay;
+    bookingSlots = slotList;
+    
+    // Tính tổng tiền sân
+    tongTienSan = 0;
+    for (const BookingSlot &slot : slotList) {
+        tongTienSan += slot.giaTien;
+    }
+    
+    // ✅ Kích hoạt tab 3
+    tabWidget->setTabEnabled(2, true);
+}
+
+void KhachHangSelectionDialog::onNextToSummary()
+{
+    int currentTab = tabWidget->currentIndex();
+    
+    if (currentTab == 0) {
+        // Validate khách hàng trước khi chuyển tab
+        if (!validateCustomerSelection()) {
+            return;
+        }
+        tabWidget->setCurrentIndex(1); // Chuyển sang tab Dịch vụ
+    }
+    else if (currentTab == 1) {
+        tabWidget->setCurrentIndex(2); // Chuyển sang tab Tóm tắt
+    }
+}
+
+bool KhachHangSelectionDialog::validateCustomerSelection()
+{
+    if (rbChonCoSan->isChecked())
+    {
+        if (!cboKhachHang->isEnabled() || cboKhachHang->currentData().toString().isEmpty())
+        {
+            QMessageBox::warning(this, "⚠️ Cảnh báo", "Vui lòng chọn khách hàng!");
+            return false;
+        }
+        selectedMaKH = cboKhachHang->currentData().toString();
+        return true;
+    }
+    else
+    {
+        return validateNewCustomer();
+    }
+}
+
+void KhachHangSelectionDialog::updateSummary()
+{
+    if (selectedMaKH.isEmpty() || bookingSlots.isEmpty()) {
+        lblTomTatNoiDung->setText("<p style='color:red;'>⚠️ Chưa có thông tin đặt sân</p>");
+        lblTongThanhToan->setText("TỔNG: 0 VNĐ");
+        return;
+    }
+    
+    // Lấy thông tin khách hàng
+    KhachHang *kh = quanLy->timKhachHang(selectedMaKH.toStdString());
+    if (!kh) {
+        lblTomTatNoiDung->setText("<p style='color:red;'>⚠️ Không tìm thấy thông tin khách hàng</p>");
+        return;
+    }
+    
+    // Tính toán
+    double giamGia = tongTienSan * kh->tinhPhanTramGiam() / 100.0;
+    double thanhTienSan = tongTienSan - giamGia;
+    double tongThanhToan = thanhTienSan + tongTienDichVu;
+    
+    // Tạo HTML tóm tắt
+    QString html = "<div style='font-family: Segoe UI, Arial;'>";
+    
+    // KHÁCH HÀNG
+    html += "<h3 style='color: #1976D2; border-bottom: 2px solid #1976D2; padding-bottom: 5px;'>👤 KHÁCH HÀNG</h3>";
+    html += "<table style='width:100%; margin-bottom: 15px;'>";
+    html += QString("<tr><td width='150'><b>Mã KH:</b></td><td>%1</td></tr>").arg(QString::fromStdString(kh->getMaKH()));
+    html += QString("<tr><td><b>Họ tên:</b></td><td>%1</td></tr>").arg(QString::fromStdString(kh->getHoTen()));
+    html += QString("<tr><td><b>SĐT:</b></td><td>%1</td></tr>").arg(QString::fromStdString(kh->getSdt()));
+    html += QString("<tr><td><b>Điểm tích lũy:</b></td><td>%1 điểm</td></tr>").arg(kh->getDiemTichLuy());
+    html += QString("<tr><td><b>Cấp độ:</b></td><td><span style='color:#e67e22; font-weight:bold;'>%1</span> (Giảm %2%)</td></tr>")
+                .arg(QString::fromStdString(kh->getTenCapDo())).arg(kh->tinhPhanTramGiam());
+    html += "</table>";
+    
+    // THÔNG TIN ĐẶT SÂN
+    html += "<h3 style='color: #1976D2; border-bottom: 2px solid #1976D2; padding-bottom: 5px;'>📅 THÔNG TIN ĐẶT SÂN</h3>";
+    html += QString("<p><b>Ngày:</b> %1</p>").arg(ngayDat.toString("dd/MM/yyyy (dddd)"));
+    html += "<table style='width:100%; border-collapse: collapse; margin-bottom: 15px;' border='1' cellpadding='5'>";
+    html += "<tr style='background-color: #E3F2FD; font-weight: bold;'>"
+            "<th>Sân</th><th>Thời gian</th><th>Số giờ</th><th>Giá tiền</th></tr>";
+    
+    for (const BookingSlot &slot : bookingSlots) {
+        html += QString("<tr><td>%1</td><td>%2</td><td>%3</td><td>%L4 VNĐ</td></tr>")
+                    .arg(slot.maSan)
+                    .arg(slot.thoiGian)
+                    .arg(slot.soGio)
+                    .arg(slot.giaTien, 0, 'f', 0);
+    }
+    html += "</table>";
+    
+    // DỊCH VỤ (nếu có)
+    if (!selectedDichVu.isEmpty()) {
+        html += "<h3 style='color: #1976D2; border-bottom: 2px solid #1976D2; padding-bottom: 5px;'>🎯 DỊCH VỤ ĐÃ CHỌN</h3>";
+        html += "<table style='width:100%; border-collapse: collapse; margin-bottom: 15px;' border='1' cellpadding='5'>";
+        html += "<tr style='background-color: #E3F2FD; font-weight: bold;'>"
+                "<th>Dịch vụ</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th></tr>";
+        
+        for (const DichVuInfo &dv : selectedDichVu) {
+            html += QString("<tr><td>%1</td><td>%L2 VNĐ</td><td>%3</td><td><b>%L4 VNĐ</b></td></tr>")
+                        .arg(QString::fromStdString(dv.tenDichVu))
+                        .arg(dv.donGia, 0, 'f', 0)
+                        .arg(dv.soLuong)
+                        .arg(dv.thanhTien, 0, 'f', 0);
+        }
+        html += "</table>";
+    }
+    
+    // CHI PHÍ
+    html += "<h3 style='color: #27ae60; border-bottom: 2px solid #27ae60; padding-bottom: 5px;'>💰 CHI PHÍ</h3>";
+    html += "<table style='width:100%; font-size: 14px;'>";
+    html += QString("<tr><td width='200'><b>Tiền sân:</b></td><td align='right'>%L1 VNĐ</td></tr>").arg(tongTienSan, 0, 'f', 0);
+    
+    if (giamGia > 0) {
+        html += QString("<tr><td><b>Giảm giá (%1%):</b></td><td align='right' style='color:#e74c3c;'>-%L2 VNĐ</td></tr>")
+                    .arg(kh->tinhPhanTramGiam()).arg(giamGia, 0, 'f', 0);
+    }
+    
+    if (tongTienDichVu > 0) {
+        html += QString("<tr><td><b>Dịch vụ:</b></td><td align='right'>+%L1 VNĐ</td></tr>").arg(tongTienDichVu, 0, 'f', 0);
+    }
+    
+    html += QString("<tr style='font-size: 16px; color: #27ae60;'><td><b>TỔNG THANH TOÁN:</b></td><td align='right'><b>%L1 VNĐ</b></td></tr>")
+                .arg(tongThanhToan, 0, 'f', 0);
+    html += "</table>";
+    
+    html += "</div>";
+    
+    lblTomTatNoiDung->setText(html);
+    lblTongThanhToan->setText(QString("💰 TỔNG THANH TOÁN: %L1 VNĐ").arg(tongThanhToan, 0, 'f', 0));
+}
+
+void KhachHangSelectionDialog::onConfirmBooking()
+{
+    if (selectedMaKH.isEmpty() || bookingSlots.isEmpty()) {
+        QMessageBox::warning(this, "⚠️ Lỗi", "Thiếu thông tin đặt sân!");
+        return;
+    }
+    
+    // Đánh dấu đã xác nhận
+    bookingConfirmed = true;
+    accept();
 }
