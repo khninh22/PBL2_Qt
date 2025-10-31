@@ -1,4 +1,5 @@
 #include "SanBookingDialog.h"
+#include "KhachHangSelectionDialog.h"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QVBoxLayout>
@@ -108,16 +109,6 @@ void TimeSlotWidget::paintEvent(QPaintEvent *event)
 
     // Cầu môn phải
     painter.drawRect(rect.right() - goalWidth - 2, centerY - goalHeight / 2, goalWidth, goalHeight);
-
-    // ✅ Vẽ trạng thái (không vẽ giờ)
-    painter.setPen(Qt::white);
-    QFont font = painter.font();
-    font.setBold(true);
-    font.setPointSize(9);
-    painter.setFont(font);
-
-    QString status = booked ? "ĐÃ ĐẶT" : (selected ? "ĐANG CHỌN" : "TRỐNG");
-    painter.drawText(rect.adjusted(0, 0, 0, -5), Qt::AlignBottom | Qt::AlignHCenter, status);
 }
 
 void TimeSlotWidget::mousePressEvent(QMouseEvent *event)
@@ -294,22 +285,11 @@ void SanBookingDialog::setupUI()
     // ===== BOOKING INFO =====
     QHBoxLayout *infoLayout = new QHBoxLayout();
 
-    infoLayout->addWidget(new QLabel("👤 Khách hàng:"));
-    cboKhachHang = new QComboBox();
-    const MangDong<KhachHang> &dsKH = quanLy->getDsKhachHang();
-    for (int i = 0; i < dsKH.getKichThuoc(); i++)
-    {
-        QString item = QString("%1 - %2")
-                           .arg(QString::fromStdString(dsKH[i].getMaKH()))
-                           .arg(QString::fromStdString(dsKH[i].getHoTen()));
-        cboKhachHang->addItem(item, QString::fromStdString(dsKH[i].getMaKH()));
-    }
-    infoLayout->addWidget(cboKhachHang);
+    // ✅ REMOVED: Combobox khách hàng (sẽ chọn khi xác nhận đặt sân)
+    // Thay vào đó, hiển thị thông tin đã chọn
 
-    infoLayout->addSpacing(20);
-
-    lblThongTin = new QLabel("Chưa chọn khung giờ nào");
-    lblThongTin->setStyleSheet("color: #666; font-style: italic;");
+    lblThongTin = new QLabel("📌 Chưa chọn khung giờ nào. Hãy click vào ô sân để bắt đầu đặt sân!");
+    lblThongTin->setStyleSheet("color: #666; font-style: italic; font-size: 13px;");
     infoLayout->addWidget(lblThongTin);
 
     infoLayout->addStretch();
@@ -550,19 +530,131 @@ void SanBookingDialog::onTimeSlotClicked(TimeSlotWidget *widget)
 
     if (wasSelected)
     {
-        // Bỏ chọn
-        selectedSlots.removeOne(widget);
-        widget->setSelected(false);
+        // ✅ BỎ CHỌN: Phải bỏ theo nhóm dựa trên thời lượng combobox
+        // VD: 1h = 2 ô, 1.5h = 3 ô, 2h = 4 ô
+
+        QString maSan = widget->getMaSan();
+        int clickHour = widget->getGioStart();
+        int clickMinute = widget->property("minute").toInt();
+        int clickTime = clickHour * 60 + clickMinute;
+
+        // Lấy thời lượng hiện tại từ combobox
+        double thoiLuongDat = cboThoiLuong->currentData().toDouble();
+        int slotsPerGroup = static_cast<int>(thoiLuongDat * 2); // 1h = 2, 1.5h = 3, 2h = 4
+
+        // Tìm tất cả các ô đã chọn của cùng sân
+        QList<TimeSlotWidget *> sanSlots;
+        for (TimeSlotWidget *slot : selectedSlots)
+        {
+            if (slot->getMaSan() == maSan)
+            {
+                sanSlots.append(slot);
+            }
+        }
+
+        // Sort theo thời gian
+        std::sort(sanSlots.begin(), sanSlots.end(), [](TimeSlotWidget *a, TimeSlotWidget *b)
+                  {
+            int aTime = a->getGioStart() * 60 + a->property("minute").toInt();
+            int bTime = b->getGioStart() * 60 + b->property("minute").toInt();
+            return aTime < bTime; });
+
+        // Phân tích thành các cụm (groups) theo thời lượng combobox
+        // VD: [X][X][X][X] với 1h (2 ô) → [[X][X], [X][X]]
+        //     [X][X][X][X] với 2h (4 ô) → [[X][X][X][X]]
+        QList<QList<TimeSlotWidget *>> groups;
+        QList<TimeSlotWidget *> currentGroup;
+
+        for (int i = 0; i < sanSlots.size(); i++)
+        {
+            currentGroup.append(sanSlots[i]);
+
+            // Kiểm tra xem đã đủ số ô cho 1 cụm chưa
+            if (currentGroup.size() == slotsPerGroup)
+            {
+                groups.append(currentGroup);
+                currentGroup.clear();
+            }
+            // Hoặc kiểm tra xem slot tiếp theo có liên tiếp không
+            else if (i + 1 < sanSlots.size())
+            {
+                int currTime = sanSlots[i]->getGioStart() * 60 + sanSlots[i]->property("minute").toInt();
+                int nextTime = sanSlots[i + 1]->getGioStart() * 60 + sanSlots[i + 1]->property("minute").toInt();
+
+                // Nếu không liên tiếp → kết thúc group hiện tại
+                if (nextTime != currTime + 30)
+                {
+                    // Group chưa đủ số ô → cảnh báo
+                    if (!currentGroup.isEmpty())
+                    {
+                        groups.append(currentGroup);
+                        currentGroup.clear();
+                    }
+                }
+            }
+        }
+
+        // Thêm group cuối cùng (nếu có)
+        if (!currentGroup.isEmpty())
+        {
+            groups.append(currentGroup);
+        }
+
+        // Tìm group chứa ô được click
+        QList<TimeSlotWidget *> groupToRemove;
+        for (const QList<TimeSlotWidget *> &group : groups)
+        {
+            for (TimeSlotWidget *slot : group)
+            {
+                int slotTime = slot->getGioStart() * 60 + slot->property("minute").toInt();
+                if (slotTime == clickTime)
+                {
+                    groupToRemove = group;
+                    break;
+                }
+            }
+            if (!groupToRemove.isEmpty())
+                break;
+        }
+
+        // Nếu không tìm thấy group (không nên xảy ra)
+        if (groupToRemove.isEmpty())
+        {
+            QMessageBox::warning(this, "⚠️ Lỗi", "Không thể xác định nhóm khung giờ cần bỏ chọn!");
+            return;
+        }
+
+        // Kiểm tra: Nếu bỏ nhóm này, số ô còn lại có đảm bảo tối thiểu 1h (2 ô) không?
+        int remainingSlots = sanSlots.size() - groupToRemove.size();
+        if (remainingSlots > 0 && remainingSlots % 2 != 0)
+        {
+            QMessageBox::warning(this, "⚠️ Không thể bỏ chọn",
+                                 QString("❌ Không thể bỏ chọn nhóm khung giờ này!\n\n"
+                                         "📋 Lý do: Số khung giờ còn lại sẽ không đủ 1 giờ (cần tối thiểu 2 ô liên tiếp).\n\n"
+                                         "💡 Giải pháp:\n"
+                                         "  1. Xóa toàn bộ lựa chọn (nút 🗑️ Xóa chọn)\n"
+                                         "  2. Chọn lại từ đầu với thời lượng mong muốn"));
+            return;
+        }
+
+        // Bỏ chọn nhóm
+        for (TimeSlotWidget *slot : groupToRemove)
+        {
+            selectedSlots.removeOne(slot);
+            slot->setSelected(false);
+        }
     }
     else
     {
-        // ✅ Tự động chọn các ô liên tiếp theo thời lượng đã chọn
+        // ✅ CHỌN: Tự động chọn theo thời lượng đã chọn từ combobox
         double thoiLuongDat = cboThoiLuong->currentData().toDouble();
 
         QString maSan = widget->getMaSan();
         int startHour = widget->getGioStart();
         int startMinute = widget->property("minute").toInt();
-        int slotsNeeded = static_cast<int>(thoiLuongDat * 2); // Mỗi slot = 0.5 giờ (30 phút)
+
+        // Tính số slot cần chọn (mỗi slot = 0.5 giờ = 30 phút)
+        int slotsNeeded = static_cast<int>(thoiLuongDat * 2); // VD: 1.5 giờ = 3 slots
 
         QList<TimeSlotWidget *> slotsToSelect;
 
@@ -603,9 +695,10 @@ void SanBookingDialog::onTimeSlotClicked(TimeSlotWidget *widget)
                     else
                     {
                         // Nếu có ô đã bị đặt trong khoảng thời gian, hiển thị cảnh báo
-                        QMessageBox::warning(this, "Cảnh báo",
-                                             QString("Không thể đặt sân %1 từ %2:%3 với thời lượng %4 giờ\n"
-                                                     "Khung giờ %5:%6 đã có người đặt!")
+                        double thoiLuongDat = cboThoiLuong->currentData().toDouble();
+                        QMessageBox::warning(this, "⚠️ Cảnh báo",
+                                             QString("❌ Không thể đặt sân %1 từ %2:%3 với thời lượng %4 giờ\n\n"
+                                                     "📋 Lý do: Khung giờ %5:%6 đã có người đặt!")
                                                  .arg(maSan)
                                                  .arg(startHour, 2, 10, QChar('0'))
                                                  .arg(startMinute, 2, 10, QChar('0'))
@@ -621,14 +714,46 @@ void SanBookingDialog::onTimeSlotClicked(TimeSlotWidget *widget)
         // Kiểm tra đủ số slot cần thiết chưa
         if (slotsToSelect.size() < slotsNeeded)
         {
-            QMessageBox::warning(this, "Cảnh báo",
-                                 QString("Không thể đặt sân %1 từ %2:%3 với thời lượng %4 giờ\n"
-                                         "Không đủ khung giờ trống liên tiếp hoặc vượt quá giờ hoạt động (6:00-22:00)")
+            double thoiLuongDat = cboThoiLuong->currentData().toDouble();
+            QMessageBox::warning(this, "⚠️ Cảnh báo",
+                                 QString("❌ Không thể đặt sân %1 từ %2:%3 với thời lượng %4 giờ\n\n"
+                                         "📋 Lý do: Không đủ khung giờ trống liên tiếp hoặc vượt quá giờ hoạt động (6:00-22:00)")
                                      .arg(maSan)
                                      .arg(startHour, 2, 10, QChar('0'))
                                      .arg(startMinute, 2, 10, QChar('0'))
                                      .arg(thoiLuongDat));
             return;
+        }
+
+        // ✅ KIỂM TRA LIÊN TIẾP: Các slot phải liên tiếp nhau (không được nhảy)
+        // Sort các slot theo thời gian
+        std::sort(slotsToSelect.begin(), slotsToSelect.end(), [](TimeSlotWidget *a, TimeSlotWidget *b)
+                  {
+            int aTime = a->getGioStart() * 60 + a->property("minute").toInt();
+            int bTime = b->getGioStart() * 60 + b->property("minute").toInt();
+            return aTime < bTime; });
+
+        // Kiểm tra xem các slot có liên tiếp không (cách nhau 30 phút)
+        for (int i = 1; i < slotsToSelect.size(); i++)
+        {
+            int prevTime = slotsToSelect[i - 1]->getGioStart() * 60 + slotsToSelect[i - 1]->property("minute").toInt();
+            int currTime = slotsToSelect[i]->getGioStart() * 60 + slotsToSelect[i]->property("minute").toInt();
+
+            if (currTime != prevTime + 30) // Không liên tiếp (cách nhau không phải 30 phút)
+            {
+                double thoiLuongDat = cboThoiLuong->currentData().toDouble();
+                QMessageBox::warning(this, "⚠️ Không thể đặt sân",
+                                     QString("❌ Không thể đặt sân %1 từ %2:%3 với thời lượng %4 giờ\n\n"
+                                             "📋 Lý do: Các khung giờ phải LIÊN TIẾP nhau!\n\n"
+                                             "💡 Ví dụ đúng: 14:00→14:30→15:00 (liên tiếp)\n"
+                                             "❌ Ví dụ sai: 14:00→14:30→15:30 (bỏ qua 15:00)\n\n"
+                                             "Vui lòng chọn khung giờ khác hoặc thời lượng ngắn hơn.")
+                                         .arg(maSan)
+                                         .arg(startHour, 2, 10, QChar('0'))
+                                         .arg(startMinute, 2, 10, QChar('0'))
+                                         .arg(thoiLuongDat));
+                return;
+            }
         }
 
         // Chọn tất cả các slot
@@ -710,31 +835,166 @@ void SanBookingDialog::onDatSan()
 {
     if (selectedSlots.isEmpty())
     {
-        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn ít nhất một khung giờ!");
+        QMessageBox::warning(this, "⚠️ Cảnh báo", "Vui lòng chọn ít nhất một khung giờ!");
         return;
     }
 
-    QString maKH = cboKhachHang->currentData().toString();
+    // ✅ Hiển thị dialog chọn khách hàng + dịch vụ (Unified Dialog)
+    KhachHangSelectionDialog unifiedDialog(quanLy, this);
+    if (unifiedDialog.exec() != QDialog::Accepted)
+    {
+        // User hủy
+        return;
+    }
 
+    QString maKH = unifiedDialog.getSelectedMaKH();
     if (maKH.isEmpty())
     {
-        QMessageBox::warning(this, "Cảnh báo", "Vui lòng chọn khách hàng!");
+        QMessageBox::critical(this, "❌ Lỗi", "Không thể lấy thông tin khách hàng!");
         return;
     }
 
-    // ✅ MỚI: Xác nhận thông tin khách hàng trước khi đặt
-    if (!xacNhanThongTinKhachHang())
+    // Tìm thông tin khách hàng để hiển thị xác nhận
+    KhachHang *kh = quanLy->timKhachHang(maKH.toStdString());
+    if (!kh)
     {
-        return; // User hủy hoặc thông tin không đúng
+        QMessageBox::critical(this, "❌ Lỗi", "Không tìm thấy thông tin khách hàng!");
+        return;
     }
 
-    // Group theo sân để đặt từng lịch
+    // Lấy danh sách dịch vụ đã chọn từ unified dialog
+    QList<DichVuInfo> dsDichVuDaChon = unifiedDialog.getSelectedDichVu();
+    double tongTienDichVu = unifiedDialog.getTongTienDichVu();
+
+    // ✅ Tính toán thông tin booking để xác nhận
+    double tongTien = 0;
+    double tongGio = 0;
     QMap<QString, QList<TimeSlotWidget *>> sanToSlots;
+
     for (TimeSlotWidget *slot : selectedSlots)
     {
         sanToSlots[slot->getMaSan()].append(slot);
+        tongGio += slot->getDuration();
+
+        // Tính giá
+        for (int i = 0; i < dsSanHienThi.getKichThuoc(); i++)
+        {
+            if (QString::fromStdString(dsSanHienThi[i].getMaSan()) == slot->getMaSan())
+            {
+                tongTien += dsSanHienThi[i].getGiaThue() * slot->getDuration();
+                break;
+            }
+        }
     }
 
+    // Format danh sách sân để hiển thị
+    QStringList danhSachSan;
+    QMapIterator<QString, QList<TimeSlotWidget *>> itInfo(sanToSlots);
+    while (itInfo.hasNext())
+    {
+        itInfo.next();
+        QString maSan = itInfo.key();
+        QList<TimeSlotWidget *> slotList = itInfo.value();
+
+        // Sort slotList theo thời gian
+        std::sort(slotList.begin(), slotList.end(), [](TimeSlotWidget *a, TimeSlotWidget *b)
+                  {
+            int aTime = a->getGioStart() * 60 + a->property("minute").toInt();
+            int bTime = b->getGioStart() * 60 + b->property("minute").toInt();
+            return aTime < bTime; });
+
+        // Tạo thông tin khung giờ
+        int startHour = slotList.first()->getGioStart();
+        int startMinute = slotList.first()->property("minute").toInt();
+        int endHour = slotList.last()->getGioStart();
+        int endMinute = slotList.last()->property("minute").toInt() + 30; // +30p cho ô cuối
+        if (endMinute >= 60)
+        {
+            endHour++;
+            endMinute -= 60;
+        }
+
+        QString timeRange = QString("%1:%2 - %3:%4")
+                                .arg(startHour, 2, 10, QChar('0'))
+                                .arg(startMinute, 2, 10, QChar('0'))
+                                .arg(endHour, 2, 10, QChar('0'))
+                                .arg(endMinute, 2, 10, QChar('0'));
+
+        danhSachSan << QString("  • %1: %2 (%3 giờ)")
+                           .arg(maSan)
+                           .arg(timeRange)
+                           .arg(slotList.size() * 0.5);
+    }
+
+    // ✅ Hiển thị dialog xác nhận chi tiết
+    QString confirmMsg = "📋 XÁC NHẬN THÔNG TIN ĐẶT SÂN\n\n";
+    confirmMsg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    confirmMsg += "👤 KHÁCH HÀNG:\n";
+    confirmMsg += QString("  • Mã KH: %1\n").arg(QString::fromStdString(kh->getMaKH()));
+    confirmMsg += QString("  • Họ tên: %1\n").arg(QString::fromStdString(kh->getHoTen()));
+    confirmMsg += QString("  • SĐT: %1\n").arg(QString::fromStdString(kh->getSdt()));
+    confirmMsg += QString("  • Điểm tích lũy: %1 điểm\n").arg(kh->getDiemTichLuy());
+    confirmMsg += QString("  • Cấp độ: %1 (Giảm %2%)\n\n")
+                      .arg(QString::fromStdString(kh->getTenCapDo()))
+                      .arg(kh->tinhPhanTramGiam());
+
+    confirmMsg += "📅 THÔNG TIN ĐẶT SÂN:\n";
+    confirmMsg += QString("  • Ngày: %1\n").arg(currentDate.toString("dd/MM/yyyy (dddd)"));
+    confirmMsg += QString("  • Tổng: %1 giờ (%2 khung × 30 phút)\n").arg(tongGio).arg(selectedSlots.size());
+    confirmMsg += "  • Chi tiết:\n";
+    confirmMsg += danhSachSan.join("\n") + "\n\n";
+
+    // ✅ Hiển thị dịch vụ đã chọn (nếu có)
+    if (!dsDichVuDaChon.isEmpty())
+    {
+        confirmMsg += "🎯 DỊCH VỤ ĐÃ CHỌN:\n";
+        for (const DichVuInfo &dv : dsDichVuDaChon)
+        {
+            confirmMsg += QString("  • %1 x%2: %L3 VNĐ\n")
+                              .arg(QString::fromStdString(dv.tenDichVu))
+                              .arg(dv.soLuong)
+                              .arg(dv.donGia * dv.soLuong, 0, 'f', 0);
+        }
+        confirmMsg += QString("  • Tổng dịch vụ: %L1 VNĐ\n\n").arg(tongTienDichVu, 0, 'f', 0);
+    }
+
+    confirmMsg += "💰 CHI PHÍ:\n";
+    double giamGia = tongTien * kh->tinhPhanTramGiam() / 100.0;
+    double thanhTienSan = tongTien - giamGia;
+    double tongThanhToan = thanhTienSan + tongTienDichVu;
+
+    confirmMsg += QString("  • Tiền sân: %L1 VNĐ\n").arg(tongTien, 0, 'f', 0);
+    if (giamGia > 0)
+    {
+        confirmMsg += QString("  • Giảm giá (%1%): -%L2 VNĐ\n")
+                          .arg(kh->tinhPhanTramGiam())
+                          .arg(giamGia, 0, 'f', 0);
+    }
+    if (tongTienDichVu > 0)
+    {
+        confirmMsg += QString("  • Dịch vụ: +%L1 VNĐ\n").arg(tongTienDichVu, 0, 'f', 0);
+    }
+    confirmMsg += QString("  • TỔNG THANH TOÁN: %L1 VNĐ\n\n").arg(tongThanhToan, 0, 'f', 0);
+
+    confirmMsg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    confirmMsg += "⚠️ Vui lòng kiểm tra kỹ thông tin!\n";
+    confirmMsg += "Bạn có chắc chắn muốn đặt sân?";
+
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("✅ Xác Nhận Đặt Sân");
+    msgBox.setText(confirmMsg);
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.button(QMessageBox::Yes)->setText("✅ Xác Nhận Đặt");
+    msgBox.button(QMessageBox::No)->setText("❌ Hủy");
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if (msgBox.exec() != QMessageBox::Yes)
+    {
+        return; // User hủy xác nhận
+    }
+
+    // ✅ Tiến hành đặt sân
     int successCount = 0;
     QStringList errors;
 
@@ -745,28 +1005,57 @@ void SanBookingDialog::onDatSan()
         QString maSan = it.key();
         QList<TimeSlotWidget *> slotList = it.value();
 
-        // Sort theo giờ
+        // Sort theo giờ và phút
         std::sort(slotList.begin(), slotList.end(), [](TimeSlotWidget *a, TimeSlotWidget *b)
-                  { return a->getGioStart() < b->getGioStart(); });
+                  {
+            int aTime = a->getGioStart() * 60 + a->property("minute").toInt();
+            int bTime = b->getGioStart() * 60 + b->property("minute").toInt();
+            return aTime < bTime; });
 
-        // Gộp các slot liên tiếp thành một booking
+        // ✅ Gộp các slot liên tiếp thành một booking
         int i = 0;
         while (i < slotList.size())
         {
             int startHour = slotList[i]->getGioStart();
-            int endHour = startHour + 1;
-            int j = i + 1;
+            int startMinute = slotList[i]->property("minute").toInt();
 
-            // Tìm các slot liên tiếp
-            while (j < slotList.size() && slotList[j]->getGioStart() == endHour)
+            // Tìm các slot liên tiếp (cách nhau 30 phút)
+            int j = i + 1;
+            int lastHour = startHour;
+            int lastMinute = startMinute;
+
+            while (j < slotList.size())
             {
-                endHour++;
-                j++;
+                int nextHour = slotList[j]->getGioStart();
+                int nextMinute = slotList[j]->property("minute").toInt();
+
+                // Kiểm tra liên tiếp (cách 30 phút)
+                int expectedTime = (lastHour * 60 + lastMinute) + 30;
+                int actualTime = nextHour * 60 + nextMinute;
+
+                if (actualTime == expectedTime)
+                {
+                    lastHour = nextHour;
+                    lastMinute = nextMinute;
+                    j++;
+                }
+                else
+                {
+                    break; // Không liên tiếp
+                }
             }
 
-            // Tạo booking từ startHour đến endHour
-            QDateTime startDT(currentDate, QTime(startHour, 0));
-            QDateTime endDT(currentDate, QTime(endHour, 0));
+            // Tạo booking từ startTime đến endTime
+            int endMinute = lastMinute + 30;
+            int endHour = lastHour;
+            if (endMinute >= 60)
+            {
+                endHour++;
+                endMinute -= 60;
+            }
+
+            QDateTime startDT(currentDate, QTime(startHour, startMinute));
+            QDateTime endDT(currentDate, QTime(endHour, endMinute));
 
             std::string maLichMoi;
             bool success = quanLy->datSan(
@@ -782,157 +1071,73 @@ void SanBookingDialog::onDatSan()
             }
             else
             {
-                // ✅ THÊM: Thông báo lỗi chi tiết hơn
-                QString errorMsg;
+                // Thông báo lỗi chi tiết
+                QString timeRange = QString("%1:%2-%3:%4")
+                                        .arg(startHour, 2, 10, QChar('0'))
+                                        .arg(startMinute, 2, 10, QChar('0'))
+                                        .arg(endHour, 2, 10, QChar('0'))
+                                        .arg(endMinute, 2, 10, QChar('0'));
 
-                // Kiểm tra các lỗi có thể xảy ra
                 time_t now = time(nullptr);
                 time_t startTime = startDT.toSecsSinceEpoch();
 
                 if (startTime < (now - 300))
                 {
-                    errorMsg = QString("%1: %2:00-%3:00 (Thời gian đã qua)")
-                                   .arg(maSan)
-                                   .arg(startHour)
-                                   .arg(endHour);
+                    errors << QString("%1: %2 (Thời gian đã qua)").arg(maSan).arg(timeRange);
                 }
                 else if (startHour < 6 || endHour > 22)
                 {
-                    errorMsg = QString("%1: %2:00-%3:00 (Ngoài giờ hoạt động 6:00-22:00)")
-                                   .arg(maSan)
-                                   .arg(startHour)
-                                   .arg(endHour);
-                }
-                else if (endHour - startHour > 12)
-                {
-                    errorMsg = QString("%1: %2:00-%3:00 (Vượt quá 12 giờ)")
-                                   .arg(maSan)
-                                   .arg(startHour)
-                                   .arg(endHour);
+                    errors << QString("%1: %2 (Ngoài giờ hoạt động)").arg(maSan).arg(timeRange);
                 }
                 else
                 {
-                    errorMsg = QString("%1: %2:00-%3:00 (Sân đã được đặt hoặc không khả dụng)")
-                                   .arg(maSan)
-                                   .arg(startHour)
-                                   .arg(endHour);
+                    errors << QString("%1: %2 (Sân đã được đặt)").arg(maSan).arg(timeRange);
                 }
-
-                errors << errorMsg;
             }
 
             i = j;
         }
     }
 
+    // ✅ Hiển thị kết quả
     if (successCount > 0)
     {
-        QString msg = QString("✅ Đã đặt thành công %1 lịch!").arg(successCount);
+        QString msg = QString("🎉 ĐẶT SÂN THÀNH CÔNG!\n\n");
+        msg += QString("✅ Đã đặt thành công %1 lịch sân cho khách hàng:\n").arg(successCount);
+        msg += QString("   • %1 - %2\n\n")
+                   .arg(QString::fromStdString(kh->getMaKH()))
+                   .arg(QString::fromStdString(kh->getHoTen()));
+
         if (!errors.isEmpty())
         {
-            msg += QString("\n\n⚠️ Không đặt được:\n%1").arg(errors.join("\n"));
+            msg += QString("\n⚠️ Không đặt được %1 lịch:\n").arg(errors.size());
+            msg += errors.join("\n");
         }
-        QMessageBox::information(this, "Thông báo", msg);
+
+        QMessageBox::information(this, "✅ Thành công", msg);
+
+        // ✅ MỚI: Emit signal để refresh khách hàng trong MainWindow
+        emit khachHangAdded();
 
         if (errors.isEmpty())
         {
-            accept();
+            accept(); // Đóng dialog nếu tất cả đều thành công
         }
         else
         {
-            loadSanBookingGrid(); // Refresh
+            loadSanBookingGrid(); // Refresh để hiển thị các lịch đã đặt
         }
     }
     else
     {
-        QString errorDetail = "Không thể đặt sân!\n\n";
+        QString errorDetail = "❌ KHÔNG THỂ ĐẶT SÂN!\n\n";
         errorDetail += "Chi tiết lỗi:\n";
         errorDetail += errors.join("\n");
-        QMessageBox::critical(this, "❌ Đặt Sân Thất Bại", errorDetail);
+        QMessageBox::critical(this, "❌ Thất bại", errorDetail);
     }
 }
 
 QString SanBookingDialog::formatTime(int hour, int minute) const
 {
     return QString("%1:%2").arg(hour, 2, 10, QChar('0')).arg(minute, 2, 10, QChar('0'));
-}
-
-// ✅ MỚI: Xác nhận thông tin khách hàng trước khi đặt sân
-bool SanBookingDialog::xacNhanThongTinKhachHang()
-{
-    QString maKH = cboKhachHang->currentData().toString();
-
-    // Tìm thông tin khách hàng
-    KhachHang *kh = quanLy->timKhachHang(maKH.toStdString());
-    if (!kh)
-    {
-        QMessageBox::critical(this, "❌ Lỗi", "Không tìm thấy thông tin khách hàng!");
-        return false;
-    }
-
-    // Tính tổng tiền và số giờ đặt
-    double tongTien = 0;
-    int tongGio = selectedSlots.size();
-    QStringList danhSachSan;
-    QMap<QString, int> sanCount;
-
-    for (TimeSlotWidget *slot : selectedSlots)
-    {
-        QString maSan = slot->getMaSan();
-        sanCount[maSan]++;
-
-        // Tìm giá sân
-        for (int i = 0; i < dsSanHienThi.getKichThuoc(); i++)
-        {
-            if (QString::fromStdString(dsSanHienThi[i].getMaSan()) == maSan)
-            {
-                tongTien += dsSanHienThi[i].getGiaThue() * slot->getDuration();
-                break;
-            }
-        }
-    }
-
-    // Format danh sách sân
-    QMapIterator<QString, int> it(sanCount);
-    while (it.hasNext())
-    {
-        it.next();
-        danhSachSan << QString("  • %1: %2 giờ").arg(it.key()).arg(it.value());
-    }
-
-    // Tạo message xác nhận
-    QString confirmMsg = "📋 XÁC NHẬN THÔNG TIN ĐẶT SÂN\n\n";
-    confirmMsg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    confirmMsg += "👤 KHÁCH HÀNG:\n";
-    confirmMsg += QString("  • Mã KH: %1\n").arg(QString::fromStdString(kh->getMaKH()));
-    confirmMsg += QString("  • Họ tên: %1\n").arg(QString::fromStdString(kh->getHoTen()));
-    confirmMsg += QString("  • SĐT: %1\n").arg(QString::fromStdString(kh->getSdt()));
-    confirmMsg += QString("  • Điểm tích lũy: %1 điểm\n").arg(kh->getDiemTichLuy());
-    confirmMsg += QString("  • Cấp độ: %1\n\n").arg(QString::fromStdString(kh->getTenCapDo()));
-
-    confirmMsg += "📅 THÔNG TIN ĐẶT SÂN:\n";
-    confirmMsg += QString("  • Ngày: %1\n").arg(currentDate.toString("dd/MM/yyyy"));
-    confirmMsg += QString("  • Tổng: %1 giờ\n").arg(tongGio);
-    confirmMsg += "  • Sân:\n";
-    confirmMsg += danhSachSan.join("\n") + "\n\n";
-
-    confirmMsg += "💰 CHI PHÍ:\n";
-    confirmMsg += QString("  • Tổng tiền: %L1 VNĐ\n\n").arg(tongTien, 0, 'f', 0);
-
-    confirmMsg += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    confirmMsg += "⚠️ Vui lòng kiểm tra kỹ thông tin!\n";
-    confirmMsg += "Bạn có chắc chắn muốn đặt sân?";
-
-    // Hiển thị dialog xác nhận
-    QMessageBox msgBox(this);
-    msgBox.setWindowTitle("✅ Xác Nhận Đặt Sân");
-    msgBox.setText(confirmMsg);
-    msgBox.setIcon(QMessageBox::Question);
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.button(QMessageBox::Yes)->setText("✅ Xác Nhận Đặt");
-    msgBox.button(QMessageBox::No)->setText("❌ Hủy");
-    msgBox.setDefaultButton(QMessageBox::No); // Mặc định là No để tránh click nhầm
-
-    int result = msgBox.exec();
-    return (result == QMessageBox::Yes);
 }

@@ -30,7 +30,7 @@ LichDatSan::LichDatSan(string ma, string maKH_, string maSan_,
     thoiGianKetThuc = ketThuc;
     tongTien = tongTien_;
     trangThaiDat = trangThaiDat_;
-    trangThaiTT = "Chua Thanh Toan";
+    trangThaiTT = "Chưa Thanh Toán";
     thoiGianThanhToan = 0;
 }
 

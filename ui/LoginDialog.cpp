@@ -14,13 +14,13 @@ LoginDialog::LoginDialog(QuanLyThueSan *qlts, QWidget *parent)
     setupUI();
     applyStyles();
 
-    // Load background image từ thư mục resources (root dự án), không dùng Qt resource
+    // Load background image từ thư mục resources
     QString appDir = QCoreApplication::applicationDirPath();
     QList<QString> candidates = {
-        // Khi chạy từ build/.../bin (Qt Creator): đi lên 3 cấp tới root dự án
-        appDir + "/../../../resources/login_bg.jpg",
-        // Khi đã copy resources vào cùng thư mục exe (bin)
+        // Ưu tiên: build/bin/resources/login_bg.jpg (vị trí chính)
         appDir + "/resources/login_bg.jpg",
+        // Fallback: Khi chạy từ build/.../bin (Qt Creator): đi lên 3 cấp tới root dự án
+        appDir + "/../../../resources/login_bg.jpg",
         // Khi chạy từ VS Code với working dir là root dự án
         QStringLiteral("resources/login_bg.jpg"),
         // Fallback theo tên khác trong repo
@@ -246,16 +246,14 @@ void LoginDialog::paintEvent(QPaintEvent *event)
 
     if (!backgroundImage.isNull())
     {
-        // Vẽ ảnh nền gốc (không resize) - scale để fit
+        // Vẽ ảnh nền phủ toàn bộ cửa sổ (stretch to fill)
         QPixmap scaledBg = backgroundImage.scaled(
             size(),
-            Qt::KeepAspectRatioByExpanding,
+            Qt::IgnoreAspectRatio,
             Qt::SmoothTransformation);
 
-        // Căn giữa ảnh
-        int x = (width() - scaledBg.width()) / 2;
-        int y = (height() - scaledBg.height()) / 2;
-        painter.drawPixmap(x, y, scaledBg);
+        // Vẽ full màn hình
+        painter.drawPixmap(0, 0, scaledBg);
     }
     else
     {

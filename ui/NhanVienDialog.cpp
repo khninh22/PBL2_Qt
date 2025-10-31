@@ -18,7 +18,7 @@ NhanVienDialog::NhanVienDialog(QWidget *parent, NhanVien *nv)
     txtTaiKhoan = new QLineEdit();
     txtMatKhau = new QLineEdit();
 
-    cboViTri->addItems({"Quan Ly", "Thu Ngan", "Bao Ve", "Bao Tri"});
+    cboViTri->addItems({"Quản Lý", "Thu Ngân", "Bảo Vệ", "Bảo Trì"});
     spnLuong->setRange(0, 100000000);
     spnLuong->setSuffix(" VNĐ");
     spnLuong->setDecimals(0);

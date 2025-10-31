@@ -50,7 +50,7 @@ cmake_ninja_workdir = D$:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/
 build cmake_object_order_depends_target_QuanLyThueSanQt: phony || QuanLyThueSanQt_autogen QuanLyThueSanQt_autogen/mocs_compilation.cpp QuanLyThueSanQt_autogen/timestamp QuanLyThueSanQt_autogen_timestamp_deps
 
 build CMakeFiles/QuanLyThueSanQt.dir/QuanLyThueSanQt_autogen/mocs_compilation.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\QuanLyThueSanQt_autogen\mocs_compilation.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -58,7 +58,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/QuanLyThueSanQt_autogen/mocs_compilation.cp
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\QuanLyThueSanQt_autogen
 
 build CMakeFiles/QuanLyThueSanQt.dir/main.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/main.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\main.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -66,7 +66,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/main.cpp.obj: CXX_COMPILER__QuanLyThueSanQt
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/KhachHang.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/KhachHang.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\KhachHang.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -74,7 +74,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/KhachHang.cpp.obj: CXX_COMPILER__QuanL
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/SanBong.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/SanBong.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\SanBong.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -82,7 +82,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/SanBong.cpp.obj: CXX_COMPILER__QuanLyT
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/LichDatSan.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/LichDatSan.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\LichDatSan.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -90,7 +90,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/LichDatSan.cpp.obj: CXX_COMPILER__Quan
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/DichVu.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/DichVu.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\DichVu.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -98,7 +98,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/DichVu.cpp.obj: CXX_COMPILER__QuanLyTh
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/ChiTietDichVu.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/ChiTietDichVu.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\ChiTietDichVu.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -106,7 +106,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/ChiTietDichVu.cpp.obj: CXX_COMPILER__Q
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/NhanVien.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/NhanVien.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\NhanVien.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -114,7 +114,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/NhanVien.cpp.obj: CXX_COMPILER__QuanLy
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/QuanLyThueSan.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/QuanLyThueSan.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\QuanLyThueSan.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -122,7 +122,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/QuanLyThueSan.cpp.obj: CXX_COMPILER__Q
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/core/AuthManager.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/core/AuthManager.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\core\AuthManager.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -130,7 +130,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/core/AuthManager.cpp.obj: CXX_COMPILER__Qua
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\core
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/MainWindow.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/MainWindow.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\MainWindow.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -138,7 +138,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/MainWindow.cpp.obj: CXX_COMPILER__QuanLy
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/SanBongDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/SanBongDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\SanBongDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -146,7 +146,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/SanBongDialog.cpp.obj: CXX_COMPILER__Qua
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/KhachHangDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\KhachHangDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -154,15 +154,31 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangDialog.cpp.obj: CXX_COMPILER__Q
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/DatSanDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/DatSanDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\DatSanDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
   OBJECT_DIR = CMakeFiles\QuanLyThueSanQt.dir
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
+build CMakeFiles/QuanLyThueSanQt.dir/ui/SanBookingDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/SanBookingDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\SanBookingDialog.cpp.obj.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
+  OBJECT_DIR = CMakeFiles\QuanLyThueSanQt.dir
+  OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
+
+build CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangSelectionDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/KhachHangSelectionDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\KhachHangSelectionDialog.cpp.obj.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
+  OBJECT_DIR = CMakeFiles\QuanLyThueSanQt.dir
+  OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
+
 build CMakeFiles/QuanLyThueSanQt.dir/ui/DichVuDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/DichVuDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\DichVuDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -170,7 +186,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/DichVuDialog.cpp.obj: CXX_COMPILER__Quan
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/NhanVienDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/NhanVienDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\NhanVienDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -178,7 +194,7 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/NhanVienDialog.cpp.obj: CXX_COMPILER__Qu
   OBJECT_FILE_DIR = CMakeFiles\QuanLyThueSanQt.dir\ui
 
 build CMakeFiles/QuanLyThueSanQt.dir/ui/LoginDialog.cpp.obj: CXX_COMPILER__QuanLyThueSanQt_unscanned_Debug D$:/PBL2_GUI/ui/LoginDialog.cpp || cmake_object_order_depends_target_QuanLyThueSanQt
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
   DEP_FILE = CMakeFiles\QuanLyThueSanQt.dir\ui\LoginDialog.cpp.obj.d
   FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -ID:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/QuanLyThueSanQt_autogen/include -ID:/PBL2_GUI/core -ID:/PBL2_GUI/ui -isystem C:/Qt/6.9.3/mingw_64/include/QtCore -isystem C:/Qt/6.9.3/mingw_64/include -isystem C:/Qt/6.9.3/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.3/mingw_64/include/QtWidgets -isystem C:/Qt/6.9.3/mingw_64/include/QtGui
@@ -193,12 +209,12 @@ build CMakeFiles/QuanLyThueSanQt.dir/ui/LoginDialog.cpp.obj: CXX_COMPILER__QuanL
 #############################################
 # Link the executable bin\QuanLyThueSanQt.exe
 
-build bin/QuanLyThueSanQt.exe: CXX_EXECUTABLE_LINKER__QuanLyThueSanQt_Debug CMakeFiles/QuanLyThueSanQt.dir/QuanLyThueSanQt_autogen/mocs_compilation.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/main.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/KhachHang.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/SanBong.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/LichDatSan.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/DichVu.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/ChiTietDichVu.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/NhanVien.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/QuanLyThueSan.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/AuthManager.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/MainWindow.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/SanBongDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/DatSanDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/DichVuDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/NhanVienDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/LoginDialog.cpp.obj | C$:/Qt/6.9.3/mingw_64/lib/libQt6Widgets.a C$:/Qt/6.9.3/mingw_64/lib/libQt6Gui.a C$:/Qt/6.9.3/mingw_64/lib/libQt6Core.a C$:/Qt/6.9.3/mingw_64/lib/libQt6EntryPoint.a || QuanLyThueSanQt_autogen QuanLyThueSanQt_autogen_timestamp_deps
+build bin/QuanLyThueSanQt.exe: CXX_EXECUTABLE_LINKER__QuanLyThueSanQt_Debug CMakeFiles/QuanLyThueSanQt.dir/QuanLyThueSanQt_autogen/mocs_compilation.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/main.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/KhachHang.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/SanBong.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/LichDatSan.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/DichVu.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/ChiTietDichVu.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/NhanVien.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/QuanLyThueSan.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/core/AuthManager.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/MainWindow.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/SanBongDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/DatSanDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/SanBookingDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/KhachHangSelectionDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/DichVuDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/NhanVienDialog.cpp.obj CMakeFiles/QuanLyThueSanQt.dir/ui/LoginDialog.cpp.obj | C$:/Qt/6.9.3/mingw_64/lib/libQt6Widgets.a C$:/Qt/6.9.3/mingw_64/lib/libQt6Gui.a C$:/Qt/6.9.3/mingw_64/lib/libQt6Core.a || QuanLyThueSanQt_autogen QuanLyThueSanQt_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG -g
   LINK_FLAGS = -mwindows
-  LINK_LIBRARIES = C:/Qt/6.9.3/mingw_64/lib/libQt6Widgets.a  C:/Qt/6.9.3/mingw_64/lib/libQt6Gui.a  C:/Qt/6.9.3/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -lmingw32  C:/Qt/6.9.3/mingw_64/lib/libQt6EntryPoint.a  -lshell32  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  LINK_LIBRARIES = C:/Qt/6.9.3/mingw_64/lib/libQt6Widgets.a  C:/Qt/6.9.3/mingw_64/lib/libQt6Gui.a  C:/Qt/6.9.3/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\QuanLyThueSanQt.dir
-  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D D:\PBL2_GUI\build\Desktop_Qt_6_9_3_MinGW_64_bit-Debug && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy_directory D:/PBL2_GUI/resources D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/bin/resources"
+  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D D:\PBL2_GUI\build\Desktop_Qt_6_9_3_MinGW_64_bit-Debug && C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/bin/data && C:\Qt\Tools\CMake_64\bin\cmake.exe -E make_directory D:/PBL2_GUI/build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug/bin/resources"
   PRE_LINK = cd .
   TARGET_FILE = bin\QuanLyThueSanQt.exe
   TARGET_IMPLIB = libQuanLyThueSanQt.dll.a

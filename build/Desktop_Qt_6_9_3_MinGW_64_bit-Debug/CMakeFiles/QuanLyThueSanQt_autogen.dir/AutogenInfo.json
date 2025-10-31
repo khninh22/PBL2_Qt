@@ -413,6 +413,12 @@
 			null
 		],
 		[
+			"D:/PBL2_GUI/ui/KhachHangSelectionDialog.h",
+			"MU",
+			"UYX5XTB5RZ/moc_KhachHangSelectionDialog.cpp",
+			null
+		],
+		[
 			"D:/PBL2_GUI/ui/LoginDialog.h",
 			"MU",
 			"UYX5XTB5RZ/moc_LoginDialog.cpp",
@@ -435,6 +441,12 @@
 			"MU",
 			"UYX5XTB5RZ/moc_SanBongDialog.cpp",
 			null
+		],
+		[
+			"D:/PBL2_GUI/ui/SanBookingDialog.h",
+			"MU",
+			"UYX5XTB5RZ/moc_SanBookingDialog.cpp",
+			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -445,7 +457,6 @@
 		"MINGW_HAS_SECURE_API=1",
 		"QT_CORE_LIB",
 		"QT_GUI_LIB",
-		"QT_NEEDS_QMAIN",
 		"QT_WIDGETS_LIB",
 		"UNICODE",
 		"WIN32",
@@ -522,10 +533,12 @@
 		[ "D:/PBL2_GUI/ui/DatSanDialog.cpp", "MU", null ],
 		[ "D:/PBL2_GUI/ui/DichVuDialog.cpp", "MU", null ],
 		[ "D:/PBL2_GUI/ui/KhachHangDialog.cpp", "MU", null ],
+		[ "D:/PBL2_GUI/ui/KhachHangSelectionDialog.cpp", "MU", null ],
 		[ "D:/PBL2_GUI/ui/LoginDialog.cpp", "MU", null ],
 		[ "D:/PBL2_GUI/ui/MainWindow.cpp", "MU", null ],
 		[ "D:/PBL2_GUI/ui/NhanVienDialog.cpp", "MU", null ],
-		[ "D:/PBL2_GUI/ui/SanBongDialog.cpp", "MU", null ]
+		[ "D:/PBL2_GUI/ui/SanBongDialog.cpp", "MU", null ],
+		[ "D:/PBL2_GUI/ui/SanBookingDialog.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

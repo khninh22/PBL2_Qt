@@ -28,7 +28,7 @@ void DichVu::hienThi() const
          << setw(25) << tenDV
          << setw(12) << loaiDV
          << setw(15) << fixed << setprecision(0) << giaDV
-         << setw(12) << (conHang ? "Con Hang" : "Het Hang")
+         << setw(12) << (conHang ? "Còn Hàng" : "Hết Hàng")
          << endl;
 }
 

@@ -15,7 +15,7 @@ DichVuDialog::DichVuDialog(QWidget *parent, DichVu *dv)
     cboLoaiDV = new QComboBox();
     spnGiaDV = new QDoubleSpinBox();
 
-    cboLoaiDV->addItems({"Do Uong", "Do An", "Khac"});
+    cboLoaiDV->addItems({"Đồ Uống", "Đồ Ăn", "Khác"});
     spnGiaDV->setRange(0, 1000000);
     spnGiaDV->setSuffix(" VNĐ");
     spnGiaDV->setDecimals(0);

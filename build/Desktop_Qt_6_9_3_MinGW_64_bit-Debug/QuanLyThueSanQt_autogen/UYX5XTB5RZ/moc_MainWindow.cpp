@@ -40,8 +40,12 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
         "MainWindow",
-        "onThemSanBong",
+        "logoutRequested",
         "",
+        "toggleSidebar",
+        "navigateToPage",
+        "index",
+        "onThemSanBong",
         "onSuaSanBong",
         "onXoaSanBong",
         "onBaoTriSan",
@@ -50,7 +54,7 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "onSuaKhachHang",
         "onXoaKhachHang",
         "onRefreshKhachHang",
-        "onDatSan",
+        "onDatSanTrucQuan",
         "onHuyLich",
         "onThanhToan",
         "onRefreshLichDat",
@@ -68,54 +72,62 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
     };
 
     QtMocHelpers::UintData qt_methods {
-        // Slot 'onThemSanBong'
-        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onSuaSanBong'
+        // Signal 'logoutRequested'
+        QtMocHelpers::SignalData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'toggleSidebar'
         QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onXoaSanBong'
-        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onBaoTriSan'
-        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onRefreshSanBong'
+        // Slot 'navigateToPage'
+        QtMocHelpers::SlotData<void(int)>(4, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 5 },
+        }}),
+        // Slot 'onThemSanBong'
         QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onThemKhachHang'
+        // Slot 'onSuaSanBong'
         QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onSuaKhachHang'
+        // Slot 'onXoaSanBong'
         QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onXoaKhachHang'
+        // Slot 'onBaoTriSan'
         QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onRefreshKhachHang'
+        // Slot 'onRefreshSanBong'
         QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onDatSan'
+        // Slot 'onThemKhachHang'
         QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onHuyLich'
+        // Slot 'onSuaKhachHang'
         QtMocHelpers::SlotData<void()>(12, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onThanhToan'
+        // Slot 'onXoaKhachHang'
         QtMocHelpers::SlotData<void()>(13, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onRefreshLichDat'
+        // Slot 'onRefreshKhachHang'
         QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onThemDichVu'
+        // Slot 'onDatSanTrucQuan'
         QtMocHelpers::SlotData<void()>(15, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onSuaDichVu'
+        // Slot 'onHuyLich'
         QtMocHelpers::SlotData<void()>(16, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onXoaDichVu'
+        // Slot 'onThanhToan'
         QtMocHelpers::SlotData<void()>(17, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onRefreshDichVu'
+        // Slot 'onRefreshLichDat'
         QtMocHelpers::SlotData<void()>(18, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onThemNhanVien'
+        // Slot 'onThemDichVu'
         QtMocHelpers::SlotData<void()>(19, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onSuaNhanVien'
+        // Slot 'onSuaDichVu'
         QtMocHelpers::SlotData<void()>(20, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onXoaNhanVien'
+        // Slot 'onXoaDichVu'
         QtMocHelpers::SlotData<void()>(21, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onRefreshNhanVien'
+        // Slot 'onRefreshDichVu'
         QtMocHelpers::SlotData<void()>(22, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onXemThongKe'
+        // Slot 'onThemNhanVien'
         QtMocHelpers::SlotData<void()>(23, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onLogout'
+        // Slot 'onSuaNhanVien'
         QtMocHelpers::SlotData<void()>(24, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'onChangePassword'
+        // Slot 'onXoaNhanVien'
         QtMocHelpers::SlotData<void()>(25, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onRefreshNhanVien'
+        QtMocHelpers::SlotData<void()>(26, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onXemThongKe'
+        QtMocHelpers::SlotData<void()>(27, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onLogout'
+        QtMocHelpers::SlotData<void()>(28, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onChangePassword'
+        QtMocHelpers::SlotData<void()>(29, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -139,34 +151,40 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     auto *_t = static_cast<MainWindow *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->onThemSanBong(); break;
-        case 1: _t->onSuaSanBong(); break;
-        case 2: _t->onXoaSanBong(); break;
-        case 3: _t->onBaoTriSan(); break;
-        case 4: _t->onRefreshSanBong(); break;
-        case 5: _t->onThemKhachHang(); break;
-        case 6: _t->onSuaKhachHang(); break;
-        case 7: _t->onXoaKhachHang(); break;
-        case 8: _t->onRefreshKhachHang(); break;
-        case 9: _t->onDatSan(); break;
-        case 10: _t->onHuyLich(); break;
-        case 11: _t->onThanhToan(); break;
-        case 12: _t->onRefreshLichDat(); break;
-        case 13: _t->onThemDichVu(); break;
-        case 14: _t->onSuaDichVu(); break;
-        case 15: _t->onXoaDichVu(); break;
-        case 16: _t->onRefreshDichVu(); break;
-        case 17: _t->onThemNhanVien(); break;
-        case 18: _t->onSuaNhanVien(); break;
-        case 19: _t->onXoaNhanVien(); break;
-        case 20: _t->onRefreshNhanVien(); break;
-        case 21: _t->onXemThongKe(); break;
-        case 22: _t->onLogout(); break;
-        case 23: _t->onChangePassword(); break;
+        case 0: _t->logoutRequested(); break;
+        case 1: _t->toggleSidebar(); break;
+        case 2: _t->navigateToPage((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 3: _t->onThemSanBong(); break;
+        case 4: _t->onSuaSanBong(); break;
+        case 5: _t->onXoaSanBong(); break;
+        case 6: _t->onBaoTriSan(); break;
+        case 7: _t->onRefreshSanBong(); break;
+        case 8: _t->onThemKhachHang(); break;
+        case 9: _t->onSuaKhachHang(); break;
+        case 10: _t->onXoaKhachHang(); break;
+        case 11: _t->onRefreshKhachHang(); break;
+        case 12: _t->onDatSanTrucQuan(); break;
+        case 13: _t->onHuyLich(); break;
+        case 14: _t->onThanhToan(); break;
+        case 15: _t->onRefreshLichDat(); break;
+        case 16: _t->onThemDichVu(); break;
+        case 17: _t->onSuaDichVu(); break;
+        case 18: _t->onXoaDichVu(); break;
+        case 19: _t->onRefreshDichVu(); break;
+        case 20: _t->onThemNhanVien(); break;
+        case 21: _t->onSuaNhanVien(); break;
+        case 22: _t->onXoaNhanVien(); break;
+        case 23: _t->onRefreshNhanVien(); break;
+        case 24: _t->onXemThongKe(); break;
+        case 25: _t->onLogout(); break;
+        case 26: _t->onChangePassword(); break;
         default: ;
         }
     }
-    (void)_a;
+    if (_c == QMetaObject::IndexOfMethod) {
+        if (QtMocHelpers::indexOfMethod<void (MainWindow::*)()>(_a, &MainWindow::logoutRequested, 0))
+            return;
+    }
 }
 
 const QMetaObject *MainWindow::metaObject() const
@@ -188,15 +206,21 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 24)
+        if (_id < 27)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 24;
+        _id -= 27;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 24)
+        if (_id < 27)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 24;
+        _id -= 27;
     }
     return _id;
+}
+
+// SIGNAL 0
+void MainWindow::logoutRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 QT_WARNING_POP

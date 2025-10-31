@@ -60,9 +60,9 @@ void SanBong::hienThi() const
 {
     cout << left << setw(10) << maSan
          << left << setw(20) << tenSan
-         << left << setw(15) << ("San " + to_string(loaiSan) + " nguoi")
+         << left << setw(15) << ("Sân " + to_string(loaiSan) + " người")
          << right << setw(15) << fixed << setprecision(0) << giaThue
-         << left << setw(15) << (baoTri ? "Dang Bao Tri" : "Hoat Dong")
+         << left << setw(15) << (baoTri ? "Đang Bảo Trì" : "Hoạt Động")
          << '\n';
 }
 

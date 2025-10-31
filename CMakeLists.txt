@@ -43,6 +43,7 @@ set(UI_SOURCES
     ui/KhachHangDialog.cpp
     ui/DatSanDialog.cpp
     ui/SanBookingDialog.cpp
+    ui/KhachHangSelectionDialog.cpp
     ui/DichVuDialog.cpp
     ui/NhanVienDialog.cpp
     ui/LoginDialog.cpp
@@ -54,6 +55,7 @@ set(UI_HEADERS
     ui/KhachHangDialog.h
     ui/DatSanDialog.h
     ui/SanBookingDialog.h
+    ui/KhachHangSelectionDialog.h
     ui/DichVuDialog.h
     ui/NhanVienDialog.h
     ui/LoginDialog.h
@@ -81,11 +83,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-# ✅ Tạo thư mục data trong bin/ để lưu dữ liệu
+# ✅ Tạo thư mục data và resources trong bin/
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/data"
-    COMMENT "Creating data directory in bin folder"
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+    COMMENT "Creating data and resources directories in bin folder"
 )
 
 # Windows specific settings - Hide console window

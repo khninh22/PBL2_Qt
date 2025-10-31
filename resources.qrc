@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/images">
-        <!-- Map the actual file resources/login_stadium.jpg to the expected resource path resources/login_bg.jpg -->
-        <file alias="resources/login_bg.jpg">resources/login_stadium.jpg</file>
-    </qresource>
-</RCC>

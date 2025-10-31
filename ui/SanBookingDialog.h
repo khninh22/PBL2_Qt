@@ -50,6 +50,9 @@ class SanBookingDialog : public QDialog
 {
     Q_OBJECT
 
+signals:
+    void khachHangAdded(); // ✅ Signal để thông báo khách hàng mới được thêm
+
 public:
     explicit SanBookingDialog(QuanLyThueSan *quanLy, QWidget *parent = nullptr);
 
@@ -67,7 +70,6 @@ private:
     void loadSanBookingGrid();
     void updateBookingStatus();
     QString formatTime(int hour, int minute = 0) const;
-    bool xacNhanThongTinKhachHang(); // ✅ MỚI: Xác nhận thông tin khách hàng
 
     QuanLyThueSan *quanLy;
 
@@ -76,7 +78,7 @@ private:
     QComboBox *cboLoaiSan;
     QComboBox *cboGioLoc;    // ✅ Combobox lọc theo giờ
     QComboBox *cboThoiLuong; // ✅ Combobox chọn thời lượng đặt sân
-    QComboBox *cboKhachHang;
+    // ✅ REMOVED: cboKhachHang - Sẽ chọn khi xác nhận đặt sân
     QTableWidget *bookingGrid;
     QPushButton *btnDatSan;
     QPushButton *btnClearSelection;

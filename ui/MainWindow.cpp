@@ -482,6 +482,14 @@ QWidget *MainWindow::createSanBongPage()
     tableSanBong = new QTableWidget();
     tableSanBong->setColumnCount(5);
     tableSanBong->setHorizontalHeaderLabels({"Mã Sân", "Tên Sân", "Loại Sân", "Giá Thuê", "Trạng Thái"});
+    
+    // Thiết lập độ rộng cột
+    tableSanBong->setColumnWidth(0, 80);   // Mã Sân
+    tableSanBong->setColumnWidth(1, 200);  // Tên Sân
+    tableSanBong->setColumnWidth(2, 150);  // Loại Sân
+    tableSanBong->setColumnWidth(3, 120);  // Giá Thuê
+    tableSanBong->setColumnWidth(4, 120);  // Trạng Thái
+    
     tableSanBong->horizontalHeader()->setStretchLastSection(true);
     tableSanBong->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableSanBong->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -519,6 +527,14 @@ QWidget *MainWindow::createKhachHangPage()
     tableKhachHang = new QTableWidget();
     tableKhachHang->setColumnCount(5);
     tableKhachHang->setHorizontalHeaderLabels({"Mã KH", "Họ Tên", "SĐT", "Điểm Tích Lũy", "Cấp Độ"});
+    
+    // Thiết lập độ rộng cột
+    tableKhachHang->setColumnWidth(0, 80);   // Mã KH
+    tableKhachHang->setColumnWidth(1, 200);  // Họ Tên
+    tableKhachHang->setColumnWidth(2, 120);  // SĐT
+    tableKhachHang->setColumnWidth(3, 120);  // Điểm
+    tableKhachHang->setColumnWidth(4, 150);  // Cấp Độ
+    
     tableKhachHang->horizontalHeader()->setStretchLastSection(true);
     tableKhachHang->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableKhachHang->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -560,6 +576,17 @@ QWidget *MainWindow::createLichDatPage()
     tableLichDat->setColumnCount(8);
     tableLichDat->setHorizontalHeaderLabels({"Mã Lịch", "Mã KH", "Mã Sân", "Bắt Đầu", "Kết Thúc",
                                              "Tổng Tiền", "TT Đặt", "TT Thanh Toán"});
+    
+    // Thiết lập độ rộng cột
+    tableLichDat->setColumnWidth(0, 80);   // Mã Lịch
+    tableLichDat->setColumnWidth(1, 80);   // Mã KH
+    tableLichDat->setColumnWidth(2, 80);   // Mã Sân
+    tableLichDat->setColumnWidth(3, 140);  // Bắt Đầu
+    tableLichDat->setColumnWidth(4, 140);  // Kết Thúc
+    tableLichDat->setColumnWidth(5, 110);  // Tổng Tiền
+    tableLichDat->setColumnWidth(6, 100);  // TT Đặt (Trạng thái đặt)
+    tableLichDat->setColumnWidth(7, 130);  // TT Thanh Toán
+    
     tableLichDat->horizontalHeader()->setStretchLastSection(true);
     tableLichDat->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableLichDat->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -596,6 +623,14 @@ QWidget *MainWindow::createDichVuPage()
     tableDichVu = new QTableWidget();
     tableDichVu->setColumnCount(5);
     tableDichVu->setHorizontalHeaderLabels({"Mã DV", "Tên DV", "Loại DV", "Giá", "Trạng Thái"});
+    
+    // Thiết lập độ rộng cột
+    tableDichVu->setColumnWidth(0, 80);   // Mã DV
+    tableDichVu->setColumnWidth(1, 250);  // Tên DV
+    tableDichVu->setColumnWidth(2, 150);  // Loại DV
+    tableDichVu->setColumnWidth(3, 120);  // Giá
+    tableDichVu->setColumnWidth(4, 120);  // Trạng Thái
+    
     tableDichVu->horizontalHeader()->setStretchLastSection(true);
     tableDichVu->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableDichVu->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -632,6 +667,15 @@ QWidget *MainWindow::createNhanVienPage()
     tableNhanVien = new QTableWidget();
     tableNhanVien->setColumnCount(6);
     tableNhanVien->setHorizontalHeaderLabels({"Mã NV", "Họ Tên", "SĐT", "Vị Trí", "Lương", "Trạng Thái"});
+    
+    // Thiết lập độ rộng cột
+    tableNhanVien->setColumnWidth(0, 80);   // Mã NV
+    tableNhanVien->setColumnWidth(1, 200);  // Họ Tên
+    tableNhanVien->setColumnWidth(2, 120);  // SĐT
+    tableNhanVien->setColumnWidth(3, 150);  // Vị Trí
+    tableNhanVien->setColumnWidth(4, 120);  // Lương
+    tableNhanVien->setColumnWidth(5, 120);  // Trạng Thái
+    
     tableNhanVien->horizontalHeader()->setStretchLastSection(true);
     tableNhanVien->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableNhanVien->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -988,6 +1032,11 @@ void MainWindow::onRefreshKhachHang()
 void MainWindow::onDatSanTrucQuan()
 {
     SanBookingDialog dialog(quanLy, this);
+
+    // ✅ MỚI: Connect signal để refresh khách hàng khi có khách hàng mới
+    connect(&dialog, &SanBookingDialog::khachHangAdded,
+            this, &MainWindow::updateKhachHangTable);
+
     if (dialog.exec() == QDialog::Accepted)
     {
         updateLichDatTable();

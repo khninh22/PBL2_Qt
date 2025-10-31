@@ -16,15 +16,15 @@ private:
     time_t thoiGianBatDau;
     time_t thoiGianKetThuc;
     double tongTien;
-    string trangThaiDat;      // "Da Dat" / "Da Huy"
-    string trangThaiTT;       // "Chua Thanh Toan" / "Da Thanh Toan"
+    string trangThaiDat;      // "Đã Đặt" / "Đã Hủy"
+    string trangThaiTT;       // "Chưa Thanh Toán" / "Đã Thanh Toán"
     time_t thoiGianThanhToan; // 0 nếu chưa thanh toán
 
 public:
     // Constructor
     LichDatSan(string maLD = "", string maKH = "", string maSan = "",
                time_t batDau = 0, time_t ketThuc = 0, double tien = 0.0,
-               string status = "Da Dat");
+               string status = "Đã Đặt");
 
     // Getters
     string getMaLichDat() const;

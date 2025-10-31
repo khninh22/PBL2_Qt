@@ -17,15 +17,15 @@ string KhachHang::getTenCapDo() const
     switch (capDoTV)
     {
     case 1:
-        return "Dong";
+        return "Đồng";
     case 2:
-        return "Bac";
+        return "Bạc";
     case 3:
-        return "Vang";
+        return "Vàng";
     case 4:
-        return "Kim Cuong";
+        return "Kim Cương";
     default:
-        return "Dong";
+        return "Đồng";
     }
 }
 

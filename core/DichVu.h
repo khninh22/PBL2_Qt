@@ -17,7 +17,7 @@ private:
 
 public:
     // Constructor
-    DichVu(string ma = "", string ten = "", string loai = "Khac", double gia = 0.0, bool hang = true);
+    DichVu(string ma = "", string ten = "", string loai = "Khác", double gia = 0.0, bool hang = true);
 
     // Getters
     string getMaDV() const;

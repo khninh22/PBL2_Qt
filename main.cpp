@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QDir>
 #include "ui/MainWindow.h"
 #include "ui/LoginDialog.h"
 #include "core/QuanLyThueSan.h"
@@ -6,6 +7,10 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    // Đặt working directory về thư mục chứa executable
+    // Đảm bảo đọc/ghi file data/ từ đúng vị trí (build/bin/)
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
 
     // Khởi tạo hệ thống quản lý
     QuanLyThueSan quanLy;

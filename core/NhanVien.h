@@ -12,7 +12,7 @@ private:
     string maNV;
     string hoTen;
     string sdt;
-    string viTri;      // "Quan Ly", "Thu Ngan", "Bao Ve", "Bao Tri"
+    string viTri;      // "Quản Lý", "Thu Ngân", "Bảo Vệ", "Bảo Trì"
     double luongCoBan; // Lương cơ bản/tháng
     bool dangLam;      // Đang làm hay đã nghỉ
     string taiKhoan;   // Tài khoản đăng nhập
@@ -21,7 +21,7 @@ private:
 public:
     // Constructor
     NhanVien(string ma = "", string ten = "", string sdt = "",
-             string vt = "Thu Ngan", double luong = 5000000, bool lam = true,
+             string vt = "Thu Ngân", double luong = 5000000, bool lam = true,
              string tk = "", string mk = "");
 
     // Getters

@@ -196,7 +196,7 @@ bool QuanLyThueSan::kiemTraTrungLich(const string &maSan, time_t batDau, time_t 
     for (int i = 0; i < dsLichDatSan.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLichDatSan[i];
-        if (lich.getMaSan() == maSan && lich.getTrangThaiDat() == "Da Dat")
+        if (lich.getMaSan() == maSan && lich.getTrangThaiDat() == "Đã Đặt")
         {
             if (batDau < lich.getThoiGianKetThuc() && ketThuc > lich.getThoiGianBatDau())
                 return true;
@@ -247,7 +247,7 @@ bool QuanLyThueSan::datSan(const string &maKH, const string &maSan, time_t batDa
 
     // Tạo lịch đặt mới
     maLichMoi = taoMaLichMoi();
-    LichDatSan lich(maLichMoi, maKH, maSan, batDau, ketThuc, tongTien, "Da Dat");
+    LichDatSan lich(maLichMoi, maKH, maSan, batDau, ketThuc, tongTien, "Đã Đặt");
     dsLichDatSan.them(lich);
     // ✅ MỚI: Cập nhật index
     indexLichDatSan.insert(dsLichDatSan[dsLichDatSan.getKichThuoc() - 1].getMaLichDat(),
@@ -262,7 +262,7 @@ bool QuanLyThueSan::huyLichDat(const string &maLichDat)
     if (lich == nullptr)
         return false;
 
-    lich->setTrangThaiDat("Da Huy");
+    lich->setTrangThaiDat("Đã Hủy");
     luuDuLieu();
     return true;
 }
@@ -390,7 +390,7 @@ bool QuanLyThueSan::xoaNhanVien(const string &maNV)
 bool QuanLyThueSan::thanhToan(const string &maLichDat, double &tongTien, double &giamGia)
 {
     LichDatSan *lich = timLichDat(maLichDat);
-    if (lich == nullptr || lich->getTrangThaiTT() == "Da Thanh Toan")
+    if (lich == nullptr || lich->getTrangThaiTT() == "Đã Thanh Toán")
         return false;
 
     tongTien = lich->getTongTien();
@@ -408,7 +408,7 @@ bool QuanLyThueSan::thanhToan(const string &maLichDat, double &tongTien, double 
     }
 
     // Cập nhật trạng thái thanh toán
-    lich->setTrangThaiTT("Da Thanh Toan");
+    lich->setTrangThaiTT("Đã Thanh Toán");
     lich->setThoiGianThanhToan(time(nullptr));
 
     luuDuLieu();
@@ -491,7 +491,7 @@ MangDong<SanBong> QuanLyThueSan::timSanTrong(int loaiSan, time_t batDau, time_t 
         for (int j = 0; j < dsLichDatSan.getKichThuoc(); j++)
         {
             const LichDatSan &lich = dsLichDatSan[j];
-            if (lich.getMaSan() == san.getMaSan() && lich.getTrangThaiDat() == "Da Dat")
+            if (lich.getMaSan() == san.getMaSan() && lich.getTrangThaiDat() == "Đã Đặt")
             {
                 if (batDau < lich.getThoiGianKetThuc() && ketThuc > lich.getThoiGianBatDau())
                 {
@@ -521,7 +521,7 @@ double QuanLyThueSan::tinhDoanhThuThang(int thang, int nam)
     for (int i = 0; i < dsLichDatSan.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLichDatSan[i];
-        if (lich.getTrangThaiTT() == "Da Thanh Toan")
+        if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
             time_t thoiGian = lich.getThoiGianThanhToan();
             tm t = *localtime(&thoiGian);
@@ -542,7 +542,7 @@ double QuanLyThueSan::tinhDoanhThuNgay(time_t ngay)
     for (int i = 0; i < dsLichDatSan.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLichDatSan[i];
-        if (lich.getTrangThaiTT() == "Da Thanh Toan")
+        if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
             time_t thoiGian = lich.getThoiGianThanhToan();
             tm t = *localtime(&thoiGian);
@@ -637,6 +637,9 @@ void QuanLyThueSan::taiDuLieu()
         }
         fileNV.close();
     }
+
+    // Rebuild index sau khi load dữ liệu
+    rebuildIndex();
 }
 
 void QuanLyThueSan::luuDuLieu()
@@ -693,11 +696,11 @@ void QuanLyThueSan::luuDuLieu()
 void QuanLyThueSan::khoiTaoDuLieuMau()
 {
     // Khởi tạo 5 sân bóng
-    SanBong san1("SB001", "San A - Loai 5", 5, 200000.0, false);
-    SanBong san2("SB002", "San B - Loai 5", 5, 200000.0, false);
-    SanBong san3("SB003", "San C - Loai 7", 7, 400000.0, false);
-    SanBong san4("SB004", "San D - Loai 7", 7, 400000.0, false);
-    SanBong san5("SB005", "San E - Loai 11", 11, 800000.0, false);
+    SanBong san1("SB001", "Sân A - Loại 5", 5, 200000.0, false);
+    SanBong san2("SB002", "Sân B - Loại 5", 5, 200000.0, false);
+    SanBong san3("SB003", "Sân C - Loại 7", 7, 400000.0, false);
+    SanBong san4("SB004", "Sân D - Loại 7", 7, 400000.0, false);
+    SanBong san5("SB005", "Sân E - Loại 11", 11, 800000.0, false);
     dsSanBong.them(san1);
     dsSanBong.them(san2);
     dsSanBong.them(san3);
@@ -705,19 +708,19 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
     dsSanBong.them(san5);
 
     // Khởi tạo 3 khách hàng
-    KhachHang kh1("KH001", "Nguyen Van A", "0901234567", 0, 1);
-    KhachHang kh2("KH002", "Tran Thi B", "0912345678", 150, 2);
-    KhachHang kh3("KH003", "Le Van C", "0923456789", 350, 3);
+    KhachHang kh1("KH001", "Nguyễn Văn A", "0901234567", 0, 1);
+    KhachHang kh2("KH002", "Trần Thị B", "0912345678", 150, 2);
+    KhachHang kh3("KH003", "Lê Văn C", "0923456789", 350, 3);
     dsKhachHang.them(kh1);
     dsKhachHang.them(kh2);
     dsKhachHang.them(kh3);
 
     // Khởi tạo 5 dịch vụ
-    DichVu dv1("DV001", "Nuoc Suoi", "Do Uong", 10000.0, true);
-    DichVu dv2("DV002", "Nuoc Tang Luc", "Do Uong", 15000.0, true);
-    DichVu dv3("DV003", "Banh Mi", "Do An", 20000.0, true);
-    DichVu dv4("DV004", "Com Hop", "Do An", 35000.0, true);
-    DichVu dv5("DV005", "Cho Thue Ao", "Khac", 50000.0, true);
+    DichVu dv1("DV001", "Nước Suối", "Đồ Uống", 10000.0, true);
+    DichVu dv2("DV002", "Nước Tăng Lực", "Đồ Uống", 15000.0, true);
+    DichVu dv3("DV003", "Bánh Mì", "Đồ Ăn", 20000.0, true);
+    DichVu dv4("DV004", "Cơm Hộp", "Đồ Ăn", 35000.0, true);
+    DichVu dv5("DV005", "Cho Thuê Áo", "Khác", 50000.0, true);
     dsDichVu.them(dv1);
     dsDichVu.them(dv2);
     dsDichVu.them(dv3);
@@ -725,9 +728,9 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
     dsDichVu.them(dv5);
 
     // Khởi tạo 3 nhân viên
-    NhanVien nv1("NV001", "Pham Van D", "0934567890", "Quan Ly", 10000000.0, true, "admin", "admin123");
-    NhanVien nv2("NV002", "Hoang Thi E", "0945678901", "Thu Ngan", 6000000.0, true, "thungan1", "thungan123");
-    NhanVien nv3("NV003", "Vo Van F", "0956789012", "Bao Tri", 5500000.0, true, "baotri1", "baotri123");
+    NhanVien nv1("NV001", "Phạm Văn D", "0934567890", "Quản Lý", 10000000.0, true, "admin", "admin123");
+    NhanVien nv2("NV002", "Hoàng Thị E", "0945678901", "Thu Ngân", 6000000.0, true, "thungan1", "thungan123");
+    NhanVien nv3("NV003", "Võ Văn F", "0956789012", "Bảo Trì", 5500000.0, true, "baotri1", "baotri123");
     dsNhanVien.them(nv1);
     dsNhanVien.them(nv2);
     dsNhanVien.them(nv3);
@@ -744,7 +747,7 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
     ngayMai->tm_hour = 10;
     time_t ketThuc1 = mktime(ngayMai);
     double tien1 = tinhTienDatSan(5, batDau1, ketThuc1);
-    LichDatSan lich1("LD001", "KH001", "SB001", batDau1, ketThuc1, tien1, "Da Dat");
+    LichDatSan lich1("LD001", "KH001", "SB001", batDau1, ketThuc1, tien1, "Đã Đặt");
     dsLichDatSan.them(lich1);
 
     // Lịch 2: Ngày mai 14:00-16:00
@@ -753,7 +756,7 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
     ngayMai->tm_hour = 16;
     time_t ketThuc2 = mktime(ngayMai);
     double tien2 = tinhTienDatSan(7, batDau2, ketThuc2);
-    LichDatSan lich2("LD002", "KH002", "SB003", batDau2, ketThuc2, tien2, "Da Dat");
+    LichDatSan lich2("LD002", "KH002", "SB003", batDau2, ketThuc2, tien2, "Đã Đặt");
     dsLichDatSan.them(lich2);
 
     // Lịch 3: Ngày mai 18:00-20:00 (giờ tối)
@@ -762,7 +765,7 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
     ngayMai->tm_hour = 20;
     time_t ketThuc3 = mktime(ngayMai);
     double tien3 = tinhTienDatSan(11, batDau3, ketThuc3);
-    LichDatSan lich3("LD003", "KH003", "SB005", batDau3, ketThuc3, tien3, "Da Dat");
+    LichDatSan lich3("LD003", "KH003", "SB005", batDau3, ketThuc3, tien3, "Đã Đặt");
     dsLichDatSan.them(lich3);
 
     // Thêm dịch vụ vào một vài lịch đặt
