@@ -161,9 +161,20 @@ void ThongKeDialog::setupUI()
     layoutKhach->addWidget(tableTopKhach);
     detailTabs->addTab(tabKhach, "👑 Top Khách VIP");
     
-    // Tab 4: Biểu đồ trực quan
+    // Tab 4: Biểu đồ trực quan - ✅ THÊM SCROLL AREA
     QWidget *tabBieuDo = new QWidget();
-    QVBoxLayout *layoutBieuDo = new QVBoxLayout(tabBieuDo);
+    QVBoxLayout *mainBieuDoLayout = new QVBoxLayout(tabBieuDo);
+    
+    // Tạo scroll area
+    QScrollArea *scrollArea = new QScrollArea();
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    
+    // Widget chứa các biểu đồ (sẽ được scroll)
+    QWidget *scrollContent = new QWidget();
+    QVBoxLayout *layoutBieuDo = new QVBoxLayout(scrollContent);
     
     QLabel *titleBieuDo = new QLabel("<h2 style='color: #2196F3; text-align: center;'>📊 Biểu Đồ Trực Quan</h2>");
     layoutBieuDo->addWidget(titleBieuDo);
@@ -171,19 +182,28 @@ void ThongKeDialog::setupUI()
     // Biểu đồ tròn - Tỷ lệ sử dụng sân
     pieChartSan = new PieChartWidget();
     pieChartSan->setTitle("🏟️ Tỷ Lệ Sử Dụng Các Sân");
+    pieChartSan->setMinimumHeight(450);  // Đảm bảo đủ cao
     layoutBieuDo->addWidget(pieChartSan);
     
     // Biểu đồ cột - Doanh thu theo giờ
     barChartGio = new BarChartWidget();
     barChartGio->setTitle("⏰ Doanh Thu Theo Khung Giờ");
     barChartGio->setColor(QColor(255, 152, 0));  // Orange
+    barChartGio->setMinimumHeight(450);  // Đảm bảo đủ cao
     layoutBieuDo->addWidget(barChartGio);
     
     // Biểu đồ cột - Dịch vụ phổ biến
     barChartDichVu = new BarChartWidget();
     barChartDichVu->setTitle("🍔 Top Dịch Vụ Phổ Biến Nhất");
     barChartDichVu->setColor(QColor(156, 39, 176));  // Purple
+    barChartDichVu->setMinimumHeight(450);  // Đảm bảo đủ cao
     layoutBieuDo->addWidget(barChartDichVu);
+    
+    layoutBieuDo->addStretch();  // Thêm stretch ở cuối
+    
+    // Gắn scroll content vào scroll area
+    scrollArea->setWidget(scrollContent);
+    mainBieuDoLayout->addWidget(scrollArea);
     
     detailTabs->addTab(tabBieuDo, "📊 Biểu Đồ");
     

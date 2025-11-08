@@ -14,6 +14,8 @@
 #include <QTabWidget>
 #include <QHeaderView>
 #include <QDate>
+#include <QScrollArea>
+#include <QFrame>
 #include "../core/QuanLyThueSan.h"
 #include "../core/managers/ThanhToanManager.h"
 #include "ChartWidgets.h"
