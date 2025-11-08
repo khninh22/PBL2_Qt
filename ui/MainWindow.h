@@ -13,6 +13,7 @@
 #include <QPropertyAnimation>
 #include <QComboBox>
 #include <QDateEdit>
+#include <functional>
 #include "../core/QuanLyThueSan.h"
 #include "../core/AuthManager.h"
 
@@ -29,7 +30,6 @@ public:
 
 private slots:
     // Sidebar navigation
-    void toggleSidebar();
     void navigateToPage(int index);
     // Sân bóng
     void onThemSanBong();
@@ -37,12 +37,14 @@ private slots:
     void onXoaSanBong();
     void onBaoTriSan();
     void onRefreshSanBong();
+    void onSanBongRowDoubleClicked(int row, int column); // NEW: Double-click để xem chi tiết
 
     // Khách hàng
     void onThemKhachHang();
     void onSuaKhachHang();
     void onXoaKhachHang();
     void onRefreshKhachHang();
+    void onKhachHangRowDoubleClicked(int row, int column); // NEW: Double-click để xem chi tiết
 
     // Lịch đặt sân
     void onDatSanTrucQuan(); // Giao diện đặt sân trực quan
@@ -61,6 +63,10 @@ private slots:
     void onSuaNhanVien();
     void onXoaNhanVien();
     void onRefreshNhanVien();
+    void onNhanVienRowDoubleClicked(int row, int column); // NEW: Double-click để xem chi tiết
+
+    // Dịch vụ
+    void onDichVuRowDoubleClicked(int row, int column); // NEW: Double-click để xem chi tiết dịch vụ
 
     // Thống kê
     void onXemThongKe();
@@ -68,6 +74,10 @@ private slots:
     // Authentication
     void onLogout();
     void onChangePassword();
+    
+    // ✅ Backup & Restore
+    void onBackupData();
+    void onRestoreData();
 
 private:
     void setupUI();
@@ -75,8 +85,17 @@ private:
     void setupContent();
     void applyAccessControl(); // Áp dụng kiểm soát quyền truy cập
 
-    // Menu items
-    QPushButton *createMenuButton(const QString &icon, const QString &text, int pageIndex);
+    // Menu button structure
+    class MenuButton {
+    public:
+        QPushButton *button;
+        QLabel *label;
+        QWidget *container;
+    };
+
+    // Menu items - ✅ Refactored
+    MenuButton createMenuButton(const QString &icon, const QString &text, int pageIndex);
+    MenuButton createSpecialButton(const QString &icon, const QString &text, const QString &color, std::function<void()> callback);
 
     // Pages
     QWidget *createSanBongPage();
@@ -101,19 +120,17 @@ private:
     // UI Components - New Layout
     QFrame *sidebar;
     QStackedWidget *stackedWidget;
-    QPushButton *btnToggleSidebar;
-    QLabel *lblLogo;
-    bool sidebarVisible;
 
-    // Menu buttons
-    QList<QPushButton *> menuButtons;
-    QPushButton *btnMenuSanBong;
-    QPushButton *btnMenuKhachHang;
-    QPushButton *btnMenuLichDat;
-    QPushButton *btnMenuDichVu;
-    QPushButton *btnMenuNhanVien;
-    QPushButton *btnMenuThongKe;
-    QPushButton *btnMenuLogout;
+    // Menu buttons - ✅ Refactored với labels riêng biệt
+    QList<MenuButton> menuButtons;
+    MenuButton btnMenuSanBong;
+    MenuButton btnMenuKhachHang;
+    MenuButton btnMenuLichDat;
+    MenuButton btnMenuDichVu;
+    MenuButton btnMenuNhanVien;
+    MenuButton btnMenuThongKe;
+    MenuButton btnMenuLogout;    // ✅ Changed to MenuButton
+    MenuButton btnMenuBackup;    // ✅ Changed to MenuButton
 
     // Sân bóng
     QTableWidget *tableSanBong;

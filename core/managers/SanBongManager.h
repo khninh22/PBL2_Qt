@@ -5,6 +5,7 @@
 #include "../LichDatSan.h"
 #include "../MangDong.h"
 #include "../HashTable.h"
+#include "../QuickSort.h"
 #include <string>
 #include <ctime>
 using namespace std;

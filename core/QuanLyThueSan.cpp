@@ -1,7 +1,7 @@
 ﻿#include "QuanLyThueSan.h"
 #include <ctime>
 
-QuanLyThueSan::QuanLyThueSan()
+QuanLyThueSan::QuanLyThueSan() : backupMgr(&fileMgr)
 {
     taiDuLieu();
     rebuildIndex();
@@ -253,16 +253,65 @@ double QuanLyThueSan::tinhDoanhThuTrungBinh(time_t tuNgay, time_t denNgay)
 
 void QuanLyThueSan::taiDuLieu()
 {
+    // Load all data from files (string IDs only)
     sanBongMgr.docFile("data/sanbong.dat");
     khachHangMgr.docFile("data/khachhang.dat");
     lichDatMgr.docFile("data/lichdatsan.dat");
     dichVuMgr.docFileDichVu("data/dichvu.dat");
     dichVuMgr.docFileChiTiet("data/chitietdichvu.dat");
     nhanVienMgr.docFile("data/nhanvien.dat");
+    
+    // ✅ NEW: Resolve object pointers after loading
+    resolveObjectPointers();
+}
+
+void QuanLyThueSan::resolveObjectPointers()
+{
+    // Resolve LichDatSan pointers (KhachHang*, SanBong*)
+    MangDong<LichDatSan> &dsLich = lichDatMgr.getDsLichDatSanRef();
+    for (int i = 0; i < dsLich.getKichThuoc(); i++)
+    {
+        LichDatSan &lich = dsLich[i];
+        
+        // Resolve KhachHang pointer
+        string maKH = lich.getTempMaKH();
+        if (!maKH.empty())
+        {
+            KhachHang *kh = khachHangMgr.timKhachHang(maKH);
+            lich.setKhachHang(kh);
+        }
+        
+        // Resolve SanBong pointer
+        string maSan = lich.getTempMaSan();
+        if (!maSan.empty())
+        {
+            SanBong *san = sanBongMgr.timSanBong(maSan);
+            lich.setSanBong(san);
+        }
+    }
+    
+    // Resolve ChiTietDichVu pointers (DichVu*)
+    MangDong<ChiTietDichVu> &dsChiTiet = dichVuMgr.getDsChiTietDichVuRef();
+    for (int i = 0; i < dsChiTiet.getKichThuoc(); i++)
+    {
+        ChiTietDichVu &ct = dsChiTiet[i];
+        
+        // Resolve DichVu pointer
+        string maDV = ct.getTempMaDV();
+        if (!maDV.empty())
+        {
+            DichVu *dv = dichVuMgr.timDichVu(maDV);
+            ct.setDichVu(dv);
+        }
+    }
 }
 
 void QuanLyThueSan::luuDuLieu()
 {
+    // ✅ AUTO-BACKUP: Backup before saving
+    taoBackupToanBo();
+    
+    // Save all data
     sanBongMgr.luuFile("data/sanbong.dat");
     khachHangMgr.luuFile("data/khachhang.dat");
     lichDatMgr.luuFile("data/lichdatsan.dat");
@@ -422,3 +471,107 @@ void QuanLyThueSan::khoiTaoDuLieuMau()
 
     luuDuLieu();
 }
+
+// ====================================================
+// ✅ BACKUP & RESTORE METHODS
+// ====================================================
+
+bool QuanLyThueSan::taoBackupToanBo()
+{
+    return backupMgr.taoBackupToanBo();
+}
+
+bool QuanLyThueSan::khoiPhucDuLieu(const string &tenBackup)
+{
+    // Restore all data files from backup
+    vector<string> dsFile = {
+        "sanbong.dat",
+        "khachhang.dat",
+        "lichdat.dat",
+        "dichvu.dat",
+        "nhanvien.dat",
+        "thanhtoan.dat"
+    };
+    
+    bool success = true;
+    for (const auto &tenFile : dsFile)
+    {
+        // Extract base filename from backup (backup_YYYYMMDD_HHMMSS_filename.dat)
+        // Find the backup file that matches
+        string backupFile = tenBackup;
+        if (backupFile.find(tenFile) != string::npos)
+        {
+            if (!backupMgr.khoiPhuc(backupFile, tenFile))
+                success = false;
+        }
+        else
+        {
+            // Build full backup filename
+            string fullBackupName = tenBackup;
+            // If tenBackup is just timestamp, append filename
+            // This needs better logic - for now try direct restore
+            if (!backupMgr.khoiPhuc(tenBackup + "_" + tenFile, tenFile))
+            {
+                // Try with just the timestamp prefix
+                auto backupList = backupMgr.layDanhSachBackup();
+                for (const auto &bf : backupList)
+                {
+                    if (bf.find(tenBackup) == 0 && bf.find(tenFile) != string::npos)
+                    {
+                        backupMgr.khoiPhuc(bf, tenFile);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    if (success)
+    {
+        taiDuLieu();  // Reload all data
+        rebuildIndex(); // Rebuild all hash tables
+    }
+    return success;
+}
+
+MangDong<string> QuanLyThueSan::layDanhSachBackup()
+{
+    // Return unique backup timestamps (extract from filenames)
+    auto allBackups = backupMgr.layDanhSachBackup();
+    MangDong<string> uniqueBackups;
+    
+    for (const auto &backup : allBackups)
+    {
+        // Extract timestamp: backup_YYYYMMDD_HHMMSS_filename.dat
+        size_t pos1 = backup.find("_");
+        if (pos1 != string::npos)
+        {
+            size_t pos2 = backup.find("_", pos1 + 1);
+            if (pos2 != string::npos)
+            {
+                size_t pos3 = backup.find("_", pos2 + 1);
+                if (pos3 != string::npos)
+                {
+                    string timestamp = backup.substr(0, pos3); // backup_YYYYMMDD_HHMMSS
+                    
+                    // Check if already added
+                    bool found = false;
+                    for (int i = 0; i < uniqueBackups.getKichThuoc(); i++)
+                    {
+                        if (uniqueBackups[i] == timestamp)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        uniqueBackups.them(timestamp);
+                }
+            }
+        }
+    }
+    
+    return uniqueBackups;
+}
+
+

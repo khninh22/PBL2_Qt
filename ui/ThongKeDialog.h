@@ -16,6 +16,7 @@
 #include <QDate>
 #include "../core/QuanLyThueSan.h"
 #include "../core/managers/ThanhToanManager.h"
+#include "ChartWidgets.h"
 
 class ThongKeDialog : public QDialog
 {
@@ -54,6 +55,11 @@ private:
     QTableWidget *tableThongKeSan;
     QTableWidget *tableKhungGio;
     QTableWidget *tableTopKhach;
+    
+    // Chart widgets
+    PieChartWidget *pieChartSan;
+    BarChartWidget *barChartGio;
+    BarChartWidget *barChartDichVu;
 };
 
 #endif // THONGKEDIALOG_H

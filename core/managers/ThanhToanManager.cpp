@@ -57,7 +57,7 @@ double ThanhToanManager::tinhDoanhThuThang(int thang, int nam, LichDatManager *l
         const LichDatSan &lich = dsLich[i];
         if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
-            time_t thoiGian = lich.getThoiGianThanhToan();
+            time_t thoiGian = lich.getThoiGianThanhToanTimeT();
             tm t = *localtime(&thoiGian);
             if (t.tm_mon + 1 == thang && t.tm_year + 1900 == nam)
             {
@@ -82,7 +82,7 @@ double ThanhToanManager::tinhDoanhThuNgay(time_t ngay, LichDatManager *lichMgr)
         const LichDatSan &lich = dsLich[i];
         if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
-            time_t thoiGian = lich.getThoiGianThanhToan();
+            time_t thoiGian = lich.getThoiGianThanhToanTimeT();
             tm t = *localtime(&thoiGian);
             if (t.tm_mday == ngayTm.tm_mday &&
                 t.tm_mon == ngayTm.tm_mon &&
@@ -124,7 +124,7 @@ double ThanhToanManager::tinhDoanhThuNam(int nam, LichDatManager *lichMgr)
         const LichDatSan &lich = dsLich[i];
         if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
-            time_t thoiGian = lich.getThoiGianThanhToan();
+            time_t thoiGian = lich.getThoiGianThanhToanTimeT();
             tm t = *localtime(&thoiGian);
             if (t.tm_year + 1900 == nam)
             {
@@ -148,7 +148,7 @@ double ThanhToanManager::tinhDoanhThuKhoang(time_t tuNgay, time_t denNgay, LichD
         const LichDatSan &lich = dsLich[i];
         if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
-            time_t thoiGian = lich.getThoiGianThanhToan();
+            time_t thoiGian = lich.getThoiGianThanhToanTimeT();
             if (thoiGian >= tuNgay && thoiGian <= denNgay)
             {
                 tong += lich.getTongTien();
@@ -174,7 +174,7 @@ MangDong<ThongKeSan> ThanhToanManager::thongKeTanSuatSan(time_t tuNgay, time_t d
     for (int i = 0; i < dsLich.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLich[i];
-        time_t thoiGian = lich.getThoiGianBatDau();
+        time_t thoiGian = lich.getThoiGianBatDauTimeT();
         
         if (thoiGian >= tuNgay && thoiGian <= denNgay && 
             lich.getTrangThaiDat() == "Đã Đặt")
@@ -226,10 +226,10 @@ double ThanhToanManager::tinhTyLelapDay(const std::string &maSan, time_t tuNgay,
         
         if (lich.getMaSan() == maSan && 
             lich.getTrangThaiDat() == "Đã Đặt" &&
-            lich.getThoiGianBatDau() >= tuNgay && 
-            lich.getThoiGianBatDau() <= denNgay)
+            lich.getThoiGianBatDauTimeT() >= tuNgay && 
+            lich.getThoiGianBatDauTimeT() <= denNgay)
         {
-            double soGio = difftime(lich.getThoiGianKetThuc(), lich.getThoiGianBatDau()) / 3600.0;
+            double soGio = difftime(lich.getThoiGianKetThucTimeT(), lich.getThoiGianBatDauTimeT()) / 3600.0;
             tongGioDaDat += soGio;
         }
     }
@@ -254,11 +254,11 @@ MangDong<ThongKeKhungGio> ThanhToanManager::thongKeKhungGio(time_t tuNgay, time_
     {
         const LichDatSan &lich = dsLich[i];
         
-        if (lich.getThoiGianBatDau() >= tuNgay && 
-            lich.getThoiGianBatDau() <= denNgay &&
+        if (lich.getThoiGianBatDauTimeT() >= tuNgay && 
+            lich.getThoiGianBatDauTimeT() <= denNgay &&
             lich.getTrangThaiDat() == "Đã Đặt")
         {
-            time_t batDau = lich.getThoiGianBatDau();
+            time_t batDau = lich.getThoiGianBatDauTimeT();
             tm t = *localtime(&batDau);
             int gio = t.tm_hour;
             
@@ -304,8 +304,8 @@ MangDong<ThongKeKhachHang> ThanhToanManager::topKhachHangVIP(int top, time_t tuN
     {
         const LichDatSan &lich = dsLich[i];
         
-        if (lich.getThoiGianBatDau() >= tuNgay && 
-            lich.getThoiGianBatDau() <= denNgay &&
+        if (lich.getThoiGianBatDauTimeT() >= tuNgay && 
+            lich.getThoiGianBatDauTimeT() <= denNgay &&
             lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
             thongKe[lich.getMaKH()].first++;
@@ -352,7 +352,7 @@ int ThanhToanManager::demTongLichDat(time_t tuNgay, time_t denNgay, LichDatManag
     for (int i = 0; i < dsLich.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLich[i];
-        if (lich.getThoiGianBatDau() >= tuNgay && lich.getThoiGianBatDau() <= denNgay)
+        if (lich.getThoiGianBatDauTimeT() >= tuNgay && lich.getThoiGianBatDauTimeT() <= denNgay)
         {
             tong++;
         }
@@ -372,7 +372,7 @@ double ThanhToanManager::tinhTyLeHuyLich(time_t tuNgay, time_t denNgay, LichDatM
     for (int i = 0; i < dsLich.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLich[i];
-        if (lich.getThoiGianBatDau() >= tuNgay && lich.getThoiGianBatDau() <= denNgay)
+        if (lich.getThoiGianBatDauTimeT() >= tuNgay && lich.getThoiGianBatDauTimeT() <= denNgay)
         {
             tongLich++;
             if (lich.getTrangThaiDat() == "Đã Hủy")
@@ -395,8 +395,8 @@ double ThanhToanManager::tinhDoanhThuTrungBinh(time_t tuNgay, time_t denNgay, Li
     for (int i = 0; i < dsLich.getKichThuoc(); i++)
     {
         const LichDatSan &lich = dsLich[i];
-        if (lich.getThoiGianBatDau() >= tuNgay && 
-            lich.getThoiGianBatDau() <= denNgay &&
+        if (lich.getThoiGianBatDauTimeT() >= tuNgay && 
+            lich.getThoiGianBatDauTimeT() <= denNgay &&
             lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
             tongDoanhThu += lich.getTongTien();

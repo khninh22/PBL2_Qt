@@ -5,14 +5,16 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QLabel>
 #include "../core/DichVu.h"
+#include "../core/QuanLyThueSan.h"
 
 class DichVuDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit DichVuDialog(QWidget *parent = nullptr, DichVu *dv = nullptr);
+    explicit DichVuDialog(QuanLyThueSan *quanLy, QWidget *parent = nullptr, DichVu *dv = nullptr);
 
     std::string getMaDV() const { return txtMaDV->text().toStdString(); }
     std::string getTenDV() const { return txtTenDV->text().toStdString(); }
@@ -20,10 +22,14 @@ public:
     double getGiaDV() const { return spnGiaDV->value(); }
 
 private:
+    QString generateMaDV(); // ✅ Auto-generate mã dịch vụ
+    
+    QuanLyThueSan *quanLy;
     QLineEdit *txtMaDV;
     QLineEdit *txtTenDV;
     QComboBox *cboLoaiDV;
     QDoubleSpinBox *spnGiaDV;
+    QLabel *lblSuggestion; // ✅ Gợi ý mã
 };
 
 #endif // DICHVUDIALOG_H

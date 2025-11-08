@@ -4,6 +4,7 @@
 #include "../KhachHang.h"
 #include "../MangDong.h"
 #include "../HashTable.h"
+#include "../QuickSort.h"
 #include <string>
 using namespace std;
 

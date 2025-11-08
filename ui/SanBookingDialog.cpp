@@ -419,8 +419,9 @@ void SanBookingDialog::loadSanBookingGrid()
                 {
                     if (dsLich[i].getMaSan() == san.getMaSan())
                     {
-                        time_t lichStart = dsLich[i].getThoiGianBatDau();
-                        time_t lichEnd = dsLich[i].getThoiGianKetThuc();
+                        // ✅ FIXED: Use TimeT getter
+                        time_t lichStart = dsLich[i].getThoiGianBatDauTimeT();
+                        time_t lichEnd = dsLich[i].getThoiGianKetThucTimeT();
 
                         // Kiểm tra overlap
                         if ((startTime >= lichStart && startTime < lichEnd) ||
@@ -1064,6 +1065,9 @@ void SanBookingDialog::onDatSan()
 
         // ✅ Emit signal để refresh khách hàng trong MainWindow
         emit khachHangAdded();
+        
+        // ✅ Emit signal để refresh lịch đặt trong MainWindow
+        emit lichDatAdded();
 
         if (errors.isEmpty())
         {

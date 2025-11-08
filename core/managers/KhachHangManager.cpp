@@ -19,7 +19,8 @@ bool KhachHangManager::themKhachHang(const string &maKH, const string &hoTen, co
     if (timKhachHang(maKH) != nullptr)
         return false;
 
-    KhachHang kh(maKH, hoTen, sdt, 0, 1); // Điểm = 0, Cấp độ = 1
+    // ✅ FIXED: Thêm diaChi="" parameter (từ ConNguoi inheritance)
+    KhachHang kh(maKH, hoTen, sdt, "", 0, 1); // diaChi="", Điểm = 0, Cấp độ = 1
     dsKhachHang.them(kh);
     
     // Cập nhật index

@@ -1,9 +1,10 @@
 #include "NhanVienDialog.h"
 #include <QFormLayout>
 #include <QDialogButtonBox>
+#include <QMessageBox>
 
-NhanVienDialog::NhanVienDialog(QWidget *parent, NhanVien *nv)
-    : QDialog(parent)
+NhanVienDialog::NhanVienDialog(QuanLyThueSan *ql, QWidget *parent, NhanVien *nv)
+    : QDialog(parent), quanLy(ql)
 {
     setWindowTitle(nv ? "Sửa Nhân Viên" : "Thêm Nhân Viên Mới");
     setMinimumWidth(400);
@@ -53,8 +54,21 @@ NhanVienDialog::NhanVienDialog(QWidget *parent, NhanVien *nv)
         txtTaiKhoan->setText(QString::fromStdString(nv->getTaiKhoan()));
         txtMatKhau->setText(QString::fromStdString(nv->getMatKhau()));
     }
+    else
+    {
+        // ✅ Auto-generate mã nhân viên mới
+        QString suggestedMa = generateMaNV();
+        txtMaNV->setText(suggestedMa);
+        txtMaNV->setPlaceholderText("VD: NV001");
+        
+        // ✅ Gợi ý mã
+        lblSuggestion = new QLabel(QString("💡 Gợi ý: <b>%1</b>").arg(suggestedMa));
+        lblSuggestion->setStyleSheet("color: #1976D2; font-size: 12px;");
+    }
 
     formLayout->addRow("📋 Mã Nhân Viên:", txtMaNV);
+    if (!nv && lblSuggestion)
+        formLayout->addRow("", lblSuggestion);
     formLayout->addRow("👤 Họ Tên:", txtHoTen);
     formLayout->addRow("📞 Số Điện Thoại:", txtSdt);
     formLayout->addRow("💼 Vị Trí:", cboViTri);
@@ -71,4 +85,24 @@ NhanVienDialog::NhanVienDialog(QWidget *parent, NhanVien *nv)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(buttonBox);
+}
+
+QString NhanVienDialog::generateMaNV()
+{
+    const MangDong<NhanVien> &dsNV = quanLy->getDsNhanVien();
+    int maxNum = 0;
+
+    for (int i = 0; i < dsNV.getKichThuoc(); i++)
+    {
+        QString maNV = QString::fromStdString(dsNV[i].getMaNV());
+        if (maNV.startsWith("NV"))
+        {
+            bool ok;
+            int num = maNV.mid(2).toInt(&ok);
+            if (ok && num > maxNum)
+                maxNum = num;
+        }
+    }
+
+    return QString("NV%1").arg(maxNum + 1, 3, 10, QChar('0'));
 }

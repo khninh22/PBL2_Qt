@@ -15,28 +15,43 @@ class LichDatManager;
 class KhachHangManager;
 class SanBongManager;
 
-// Struct cho thống kê sân
-struct ThongKeSan {
+// ✅ CLASS cho thống kê sân (OOP thay vì struct)
+class ThongKeSan {
+public:
     string maSan;
     string tenSan;
     int soLanDat;
     double doanhThu;
     double tyLelapDay; // % thời gian được sử dụng
+    
+    ThongKeSan() : soLanDat(0), doanhThu(0.0), tyLelapDay(0.0) {}
+    ThongKeSan(const string &ma, const string &ten, int solan, double dt, double tyle)
+        : maSan(ma), tenSan(ten), soLanDat(solan), doanhThu(dt), tyLelapDay(tyle) {}
 };
 
-// Struct cho thống kê khách hàng
-struct ThongKeKhachHang {
+// ✅ CLASS cho thống kê khách hàng (OOP thay vì struct)
+class ThongKeKhachHang {
+public:
     string maKH;
     string hoTen;
     int soLanDat;
     double tongChiTieu;
+    
+    ThongKeKhachHang() : soLanDat(0), tongChiTieu(0.0) {}
+    ThongKeKhachHang(const string &ma, const string &ten, int solan, double tien)
+        : maKH(ma), hoTen(ten), soLanDat(solan), tongChiTieu(tien) {}
 };
 
-// Struct cho thống kê khung giờ
-struct ThongKeKhungGio {
+// ✅ CLASS cho thống kê khung giờ (OOP thay vì struct)
+class ThongKeKhungGio {
+public:
     int gio; // 6-22
     int soLanDat;
     double doanhThu;
+    
+    ThongKeKhungGio() : gio(0), soLanDat(0), doanhThu(0.0) {}
+    ThongKeKhungGio(int h, int solan, double dt)
+        : gio(h), soLanDat(solan), doanhThu(dt) {}
 };
 
 // ============================

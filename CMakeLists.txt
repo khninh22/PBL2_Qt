@@ -14,6 +14,13 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets PrintSupport)
 
 # Core sources
 set(CORE_SOURCES
+    # ✅ NEW: OOP Hierarchy Base Classes
+    core/ConNguoi.cpp
+    core/NguoiDung.cpp
+    # ✅ NEW: Date/Time Classes
+    core/NgayThang.cpp
+    core/NgayGio.cpp
+    # Entity Classes (refactored with inheritance)
     core/KhachHang.cpp
     core/SanBong.cpp
     core/LichDatSan.cpp
@@ -22,16 +29,38 @@ set(CORE_SOURCES
     core/NhanVien.cpp
     core/QuanLyThueSan.cpp
     core/AuthManager.cpp
-    # ✅ NEW: Manager Pattern - Single Responsibility
+    # ✅ Manager Pattern - Single Responsibility
     core/managers/SanBongManager.cpp
     core/managers/KhachHangManager.cpp
     core/managers/LichDatManager.cpp
     core/managers/DichVuManager.cpp
     core/managers/NhanVienManager.cpp
     core/managers/ThanhToanManager.cpp
+    # ✅ NEW: File & Backup Managers
+    core/managers/FileManager.cpp
+    core/managers/BackupManager.cpp
+    # ✅ NEW: ThongKe Hierarchy - Statistics OOP
+    core/ThongKe/ThongKe.cpp
+    core/ThongKe/ThongKeDoanhThu.cpp
+    core/ThongKe/ThongKeKhachHang.cpp
 )
 
 set(CORE_HEADERS
+    # ✅ NEW: OOP Hierarchy Base Classes
+    core/ConNguoi.h
+    core/NguoiDung.h
+    # ✅ NEW: Date/Time Classes
+    core/NgayThang.h
+    core/NgayGio.h
+    # ✅ NEW: Algorithms (Header-only Templates)
+    core/QuickSort.h
+    # Data Structures & Utilities
+    core/MangDong.h
+    core/HashTable.h
+    core/Exceptions.h
+    core/Validator.h
+    core/QuanLyThueSanValidated.h
+    # Entity Headers (refactored with inheritance)
     core/KhachHang.h
     core/SanBong.h
     core/LichDatSan.h
@@ -39,15 +68,21 @@ set(CORE_HEADERS
     core/ChiTietDichVu.h
     core/NhanVien.h
     core/QuanLyThueSan.h
-    core/MangDong.h
     core/AuthManager.h
-    # ✅ NEW: Manager Pattern Headers
+    # ✅ Manager Pattern Headers
     core/managers/SanBongManager.h
     core/managers/KhachHangManager.h
     core/managers/LichDatManager.h
     core/managers/DichVuManager.h
     core/managers/NhanVienManager.h
     core/managers/ThanhToanManager.h
+    # ✅ NEW: File & Backup Managers
+    core/managers/FileManager.h
+    core/managers/BackupManager.h
+    # ✅ NEW: ThongKe Hierarchy - Statistics OOP
+    core/ThongKe/ThongKe.h
+    core/ThongKe/ThongKeDoanhThu.h
+    core/ThongKe/ThongKeKhachHang.h
 )
 
 # UI sources
@@ -63,6 +98,8 @@ set(UI_SOURCES
     ui/LoginDialog.cpp
     ui/PaymentDialog.cpp
     ui/ThongKeDialog.cpp
+    ui/RestoreDialog.cpp
+    ui/ChartWidgets.cpp
 )
 
 set(UI_HEADERS
@@ -77,6 +114,8 @@ set(UI_HEADERS
     ui/LoginDialog.h
     ui/PaymentDialog.h
     ui/ThongKeDialog.h
+    ui/ChartWidgets.h
+    ui/RestoreDialog.h
 )
 
 # Main executable

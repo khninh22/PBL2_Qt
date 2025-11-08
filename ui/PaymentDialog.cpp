@@ -13,7 +13,7 @@ PaymentDialog::PaymentDialog(QuanLyThueSan *ql, QWidget *parent)
     : QDialog(parent), quanLy(ql)
 {
     setWindowTitle("💰 Thanh Toán Hóa Đơn");
-    setMinimumSize(1200, 700);
+    setMinimumSize(1400, 750); // ✅ Tăng kích thước dialog
     setupUI();
     loadLichDatChuaThanhToan();
 }
@@ -58,17 +58,17 @@ void PaymentDialog::setupUI()
     );
     leftLayout->addWidget(tableLichDat);
     
-    mainLayout->addLayout(leftLayout, 2);
+    mainLayout->addLayout(leftLayout, 2); // ✅ Bên trái chiếm 2/3
     
     // ========== RIGHT SIDE: Hóa đơn ==========
     QVBoxLayout *rightLayout = new QVBoxLayout();
     
     QLabel *lblInvoiceTitle = new QLabel("🧾 CHI TIẾT HÓA ĐƠN");
     lblInvoiceTitle->setStyleSheet(
-        "font-size: 18px;"
+        "font-size: 16px;" // ✅ Giảm font size từ 18px
         "font-weight: bold;"
         "color: #4CAF50;"
-        "padding: 10px;"
+        "padding: 8px;" // ✅ Giảm padding
         "text-align: center;"
     );
     lblInvoiceTitle->setAlignment(Qt::AlignCenter);
@@ -82,28 +82,33 @@ void PaymentDialog::setupUI()
         "    border: 2px solid #4CAF50;"
         "    border-radius: 8px;"
         "    background-color: white;"
-        "    padding: 15px;"
+        "    padding: 12px;" // ✅ Giảm padding từ 15px
         "    font-family: 'Courier New', monospace;"
-        "    font-size: 12px;"
+        "    font-size: 11px;" // ✅ Giảm font size từ 12px
         "}"
     );
     rightLayout->addWidget(txtHoaDon);
     
-    // Tổng tiền section
+    // Tổng tiền section - ✅ Thu gọn
     QVBoxLayout *tongTienLayout = new QVBoxLayout();
+    tongTienLayout->setSpacing(3); // ✅ Giảm spacing
     
     QHBoxLayout *tongTienRow = new QHBoxLayout();
-    tongTienRow->addWidget(new QLabel("Tổng tiền:"));
+    QLabel *lblTongTienText = new QLabel("Tổng tiền:");
+    lblTongTienText->setStyleSheet("font-size: 12px;"); // ✅ Giảm font
+    tongTienRow->addWidget(lblTongTienText);
     lblTongTien = new QLabel("0 VNĐ");
-    lblTongTien->setStyleSheet("font-weight: bold; color: #2196F3;");
+    lblTongTien->setStyleSheet("font-weight: bold; color: #2196F3; font-size: 12px;");
     tongTienRow->addStretch();
     tongTienRow->addWidget(lblTongTien);
     tongTienLayout->addLayout(tongTienRow);
     
     QHBoxLayout *giamGiaRow = new QHBoxLayout();
-    giamGiaRow->addWidget(new QLabel("Giảm giá:"));
-    lblGiamGia = new QLabel("0 VNĐ");
-    lblGiamGia->setStyleSheet("font-weight: bold; color: #FF9800;");
+    QLabel *lblGiamGiaText = new QLabel("Giảm giá (0%%):");
+    lblGiamGiaText->setStyleSheet("font-size: 12px;");
+    giamGiaRow->addWidget(lblGiamGiaText);
+    lblGiamGia = new QLabel("0 VNĐ (0%%)");
+    lblGiamGia->setStyleSheet("font-weight: bold; color: #FF9800; font-size: 12px;");
     giamGiaRow->addStretch();
     giamGiaRow->addWidget(lblGiamGia);
     tongTienLayout->addLayout(giamGiaRow);
@@ -117,30 +122,32 @@ void PaymentDialog::setupUI()
     
     QHBoxLayout *thanhToanRow = new QHBoxLayout();
     QLabel *lblThanhToanText = new QLabel("THANH TOÁN:");
-    lblThanhToanText->setStyleSheet("font-size: 16px; font-weight: bold;");
+    lblThanhToanText->setStyleSheet("font-size: 14px; font-weight: bold;"); // ✅ Giảm từ 16px
     thanhToanRow->addWidget(lblThanhToanText);
     lblThanhToan = new QLabel("0 VNĐ");
-    lblThanhToan->setStyleSheet("font-size: 20px; font-weight: bold; color: #4CAF50;");
+    lblThanhToan->setStyleSheet("font-size: 16px; font-weight: bold; color: #4CAF50;"); // ✅ Giảm từ 20px
     thanhToanRow->addStretch();
     thanhToanRow->addWidget(lblThanhToan);
     tongTienLayout->addLayout(thanhToanRow);
     
     rightLayout->addLayout(tongTienLayout);
     
-    // Buttons
+    // Buttons - ✅ Thu nhỏ lại
     QHBoxLayout *btnLayout = new QHBoxLayout();
+    btnLayout->setSpacing(8); // ✅ Giảm spacing giữa các nút
     
-    btnXacNhan = new QPushButton("✅ Xác nhận thanh toán");
+    btnXacNhan = new QPushButton("✅ Xác nhận");
     btnXacNhan->setEnabled(false);
     btnXacNhan->setStyleSheet(
         "QPushButton {"
         "    background-color: #4CAF50;"
         "    color: white;"
         "    border: none;"
-        "    padding: 12px 20px;"
+        "    padding: 10px 16px;" // ✅ Giảm padding từ 12px 20px
         "    border-radius: 6px;"
         "    font-weight: bold;"
-        "    font-size: 14px;"
+        "    font-size: 12px;" // ✅ Giảm font từ 14px
+        "    min-width: 100px;" // ✅ Giảm chiều rộng tối thiểu
         "}"
         "QPushButton:hover {"
         "    background-color: #45a049;"
@@ -150,16 +157,18 @@ void PaymentDialog::setupUI()
         "}"
     );
     
-    btnInHoaDon = new QPushButton("🖨️ In hóa đơn");
+    btnInHoaDon = new QPushButton("🖨️ In");
     btnInHoaDon->setEnabled(false);
     btnInHoaDon->setStyleSheet(
         "QPushButton {"
         "    background-color: #2196F3;"
         "    color: white;"
         "    border: none;"
-        "    padding: 12px 20px;"
+        "    padding: 10px 16px;" // ✅ Thu nhỏ
         "    border-radius: 6px;"
         "    font-weight: bold;"
+        "    font-size: 12px;" // ✅ Font nhỏ
+        "    min-width: 80px;" // ✅ Rộng tối thiểu
         "}"
         "QPushButton:hover {"
         "    background-color: #1976D2;"
@@ -169,16 +178,18 @@ void PaymentDialog::setupUI()
         "}"
     );
     
-    btnLuuPDF = new QPushButton("📄 Lưu PDF");
+    btnLuuPDF = new QPushButton("📄 PDF");
     btnLuuPDF->setEnabled(false);
     btnLuuPDF->setStyleSheet(
         "QPushButton {"
         "    background-color: #FF9800;"
         "    color: white;"
         "    border: none;"
-        "    padding: 12px 20px;"
+        "    padding: 10px 16px;" // ✅ Thu nhỏ
         "    border-radius: 6px;"
         "    font-weight: bold;"
+        "    font-size: 12px;" // ✅ Font nhỏ
+        "    min-width: 80px;" // ✅ Rộng tối thiểu
         "}"
         "QPushButton:hover {"
         "    background-color: #F57C00;"
@@ -194,9 +205,11 @@ void PaymentDialog::setupUI()
         "    background-color: #757575;"
         "    color: white;"
         "    border: none;"
-        "    padding: 12px 20px;"
+        "    padding: 10px 16px;" // ✅ Thu nhỏ
         "    border-radius: 6px;"
         "    font-weight: bold;"
+        "    font-size: 12px;" // ✅ Font nhỏ
+        "    min-width: 80px;" // ✅ Rộng tối thiểu
         "}"
         "QPushButton:hover {"
         "    background-color: #616161;"
@@ -211,7 +224,7 @@ void PaymentDialog::setupUI()
     
     rightLayout->addLayout(btnLayout);
     
-    mainLayout->addLayout(rightLayout, 3);
+    mainLayout->addLayout(rightLayout, 1); // ✅ Bên phải chiếm 1/3
     
     // ========== Connections ==========
     connect(tableLichDat, &QTableWidget::itemSelectionChanged, 
@@ -234,7 +247,8 @@ void PaymentDialog::loadLichDatChuaThanhToan()
         // Chỉ hiển thị lịch chưa thanh toán và chưa bị hủy
         if (lich.getTrangThaiTT() == "Chưa Thanh Toán" && lich.getTrangThaiDat() == "Đã Đặt")
         {
-            KhachHang *kh = quanLy->timKhachHang(lich.getMaKH());
+            // ✅ OPTIMIZED: Direct pointer access
+            KhachHang *kh = lich.getKhachHang();
             
             int row = tableLichDat->rowCount();
             tableLichDat->insertRow(row);
@@ -244,9 +258,9 @@ void PaymentDialog::loadLichDatChuaThanhToan()
             tableLichDat->setItem(row, 2, new QTableWidgetItem(
                 kh ? QString::fromStdString(kh->getHoTen()) : "N/A"));
             tableLichDat->setItem(row, 3, new QTableWidgetItem(
-                QString::fromStdString(formatTime(lich.getThoiGianBatDau()))));
+                QString::fromStdString(lich.getThoiGianBatDau().toString())));
             tableLichDat->setItem(row, 4, new QTableWidgetItem(
-                QString::fromStdString(formatTime(lich.getThoiGianKetThuc()))));
+                QString::fromStdString(lich.getThoiGianKetThuc().toString())));
             tableLichDat->setItem(row, 5, new QTableWidgetItem(
                 QString("%L1 VNĐ").arg(lich.getTongTien(), 0, 'f', 0)));
         }
@@ -290,8 +304,9 @@ QString PaymentDialog::generateInvoiceHTML()
     LichDatSan *lich = quanLy->timLichDat(maLichDatDangChon.toStdString());
     if (!lich) return "";
     
-    KhachHang *kh = quanLy->timKhachHang(lich->getMaKH());
-    SanBong *san = quanLy->timSanBong(lich->getMaSan());
+    // ✅ OPTIMIZED: Direct pointer access instead of lookup
+    KhachHang *kh = lich->getKhachHang();
+    SanBong *san = lich->getSanBong();
     
     if (!kh || !san) return "";
     
@@ -384,8 +399,8 @@ QString PaymentDialog::generateInvoiceHTML()
      .arg(QString::fromStdString(kh->getTenCapDo()))
      .arg(kh->getDiemTichLuy())
      .arg(QString::fromStdString(san->getTenSan()))
-     .arg(QString::fromStdString(formatTime(lich->getThoiGianBatDau())))
-     .arg(QString::fromStdString(formatTime(lich->getThoiGianKetThuc())))
+     .arg(QString::fromStdString(lich->getThoiGianBatDau().toString()))
+     .arg(QString::fromStdString(lich->getThoiGianKetThuc().toString()))
      .arg(tienSan, 0, 'f', 0);
     
     // Dịch vụ (nếu có)

@@ -1,14 +1,18 @@
 #include "KhachHang.h"
 #include <iomanip>
 
-// Constructor
-KhachHang::KhachHang(string ma, string ten, string sdt_val, int diem, int cap)
-    : maKH(ma), hoTen(ten), sdt(sdt_val), diemTichLuy(diem), capDoTV(cap) {}
+// Constructors
+KhachHang::KhachHang()
+    : ConNguoi(), maKH(""), diemTichLuy(0), capDoTV(1) {}
+
+KhachHang::KhachHang(string ma, string ten, string sdt_val, string dc, int diem, int cap)
+    : ConNguoi(ten, sdt_val, dc), maKH(ma), diemTichLuy(diem), capDoTV(cap) {}
+
+KhachHang::KhachHang(const KhachHang &other)
+    : ConNguoi(other), maKH(other.maKH), diemTichLuy(other.diemTichLuy), capDoTV(other.capDoTV) {}
 
 // Getters
 string KhachHang::getMaKH() const { return maKH; }
-string KhachHang::getHoTen() const { return hoTen; }
-string KhachHang::getSdt() const { return sdt; }
 int KhachHang::getDiemTichLuy() const { return diemTichLuy; }
 int KhachHang::getCapDoTV() const { return capDoTV; }
 
@@ -30,8 +34,6 @@ string KhachHang::getTenCapDo() const
 }
 
 // Setters
-void KhachHang::setHoTen(const string &ten) { hoTen = ten; }
-void KhachHang::setSdt(const string &s) { sdt = s; }
 void KhachHang::setDiemTichLuy(int diem) { diemTichLuy = diem; }
 void KhachHang::setCapDoTV(int cap) { capDoTV = cap; }
 
@@ -92,35 +94,39 @@ double KhachHang::tinhPhanTramGiam() const
     }
 }
 
-// Hiển thị thông tin khách hàng
+// Hiển thị thông tin khách hàng - Override từ ConNguoi
 void KhachHang::hienThi() const
 {
     cout << left
          << setw(10) << maKH
-         << setw(25) << hoTen
-         << setw(15) << sdt
+         << setw(25) << hoTen // Từ ConNguoi
+         << setw(15) << sdt   // Từ ConNguoi
          << setw(10) << diemTichLuy
          << setw(12) << getTenCapDo()
          << endl;
 }
 
-// Serialization: Ghi đối tượng vào file binary
+// ✅ NEW: Enhanced detailed display
+void KhachHang::hienThiThongTin() const
+{
+    ConNguoi::hienThiThongTin(); // Gọi base class
+    cout << "Ma Khach Hang: " << maKH << endl;
+    cout << "Diem Tich Luy: " << diemTichLuy << " diem" << endl;
+    cout << "Cap Do Thanh Vien: " << getTenCapDo() << " (Cap " << capDoTV << ")" << endl;
+    cout << "Phan Tram Giam Gia: " << tinhPhanTramGiam() << "%" << endl;
+    cout << "==============================" << endl;
+}
+
+// Serialization: Ghi đối tượng vào file binary - Chain với ConNguoi
 void KhachHang::serialize(ofstream &out) const
 {
+    // Gọi serialize của ConNguoi (hoTen, sdt, diaChi)
+    ConNguoi::serialize(out);
+
     // Ghi độ dài và nội dung của maKH
     size_t len = maKH.length();
     out.write(reinterpret_cast<const char *>(&len), sizeof(len));
     out.write(maKH.c_str(), len);
-
-    // Ghi độ dài và nội dung của hoTen
-    len = hoTen.length();
-    out.write(reinterpret_cast<const char *>(&len), sizeof(len));
-    out.write(hoTen.c_str(), len);
-
-    // Ghi độ dài và nội dung của sdt
-    len = sdt.length();
-    out.write(reinterpret_cast<const char *>(&len), sizeof(len));
-    out.write(sdt.c_str(), len);
 
     // Ghi diemTichLuy
     out.write(reinterpret_cast<const char *>(&diemTichLuy), sizeof(diemTichLuy));
@@ -129,24 +135,17 @@ void KhachHang::serialize(ofstream &out) const
     out.write(reinterpret_cast<const char *>(&capDoTV), sizeof(capDoTV));
 }
 
-// Deserialization: Đọc đối tượng từ file binary
+// Deserialization: Đọc đối tượng từ file binary - Chain với ConNguoi
 void KhachHang::deserialize(ifstream &in)
 {
+    // Gọi deserialize của ConNguoi (hoTen, sdt, diaChi)
+    ConNguoi::deserialize(in);
+
     // Đọc maKH
     size_t len;
     in.read(reinterpret_cast<char *>(&len), sizeof(len));
     maKH.resize(len);
     in.read(&maKH[0], len);
-
-    // Đọc hoTen
-    in.read(reinterpret_cast<char *>(&len), sizeof(len));
-    hoTen.resize(len);
-    in.read(&hoTen[0], len);
-
-    // Đọc sdt
-    in.read(reinterpret_cast<char *>(&len), sizeof(len));
-    sdt.resize(len);
-    in.read(&sdt[0], len);
 
     // Đọc diemTichLuy (nếu có, nếu không thì = 0)
     if (in.peek() != EOF)
@@ -159,4 +158,32 @@ void KhachHang::deserialize(ifstream &in)
         diemTichLuy = 0;
         capDoTV = 1;
     }
+}
+
+// ✅ NEW: Text file I/O
+void KhachHang::ghiFile(ofstream &out) const
+{
+    ConNguoi::ghiFile(out); // Gọi base class
+    out << maKH << "\n" << diemTichLuy << "\n" << capDoTV << "\n";
+}
+
+void KhachHang::docFile(ifstream &in)
+{
+    ConNguoi::docFile(in); // Gọi base class
+    getline(in, maKH);
+    in >> diemTichLuy >> capDoTV;
+    in.ignore(); // Clear newline
+}
+
+// Operator assignment
+KhachHang &KhachHang::operator=(const KhachHang &other)
+{
+    if (this != &other)
+    {
+        ConNguoi::operator=(other); // Gọi base assignment
+        maKH = other.maKH;
+        diemTichLuy = other.diemTichLuy;
+        capDoTV = other.capDoTV;
+    }
+    return *this;
 }

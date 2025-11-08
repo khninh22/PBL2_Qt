@@ -1,6 +1,7 @@
 #include "LichDatManager.h"
 #include "SanBongManager.h"
 #include "KhachHangManager.h"
+#include "../NgayGio.h" // ✅ NEW: For NgayGio constructor
 #include <fstream>
 
 // Constructor
@@ -23,7 +24,7 @@ bool LichDatManager::kiemTraTrungLich(const string &maSan, time_t batDau, time_t
         const LichDatSan &lich = dsLichDatSan[i];
         if (lich.getMaSan() == maSan && lich.getTrangThaiDat() == "Đã Đặt")
         {
-            if (batDau < lich.getThoiGianKetThuc() && ketThuc > lich.getThoiGianBatDau())
+            if (batDau < lich.getThoiGianKetThucTimeT() && ketThuc > lich.getThoiGianBatDauTimeT())
                 return true;
         }
     }
@@ -67,7 +68,8 @@ bool LichDatManager::datSan(const string &maKH, const string &maSan, time_t batD
     if (khMgr == nullptr)
         return false;
     
-    if (khMgr->timKhachHang(maKH) == nullptr)
+    KhachHang *kh = khMgr->timKhachHang(maKH);
+    if (kh == nullptr)
         return false;
 
     // Kiểm tra trùng lịch
@@ -77,9 +79,11 @@ bool LichDatManager::datSan(const string &maKH, const string &maSan, time_t batD
     // Tính tiền
     double tongTien = tinhTienDatSan(san->getLoaiSan(), batDau, ketThuc);
 
-    // Tạo lịch đặt mới
+    // ✅ NEW: Tạo lịch đặt mới với OBJECT POINTERS
     maLichMoi = taoMaLichMoi();
-    LichDatSan lich(maLichMoi, maKH, maSan, batDau, ketThuc, tongTien, "Đã Đặt");
+    NgayGio ngayBatDau(batDau);
+    NgayGio ngayKetThuc(ketThuc);
+    LichDatSan lich(maLichMoi, kh, san, ngayBatDau, ngayKetThuc, tongTien, "Đã Đặt");
     dsLichDatSan.them(lich);
     
     // Cập nhật index
@@ -171,12 +175,12 @@ string LichDatManager::taoMaLichMoi()
 // Hàm so sánh cho Quick Sort
 static bool soSanhThoiGianTang(const LichDatSan &a, const LichDatSan &b)
 {
-    return a.getThoiGianBatDau() < b.getThoiGianBatDau();
+    return a.getThoiGianBatDauTimeT() < b.getThoiGianBatDauTimeT();
 }
 
 static bool soSanhThoiGianGiam(const LichDatSan &a, const LichDatSan &b)
 {
-    return a.getThoiGianBatDau() > b.getThoiGianBatDau();
+    return a.getThoiGianBatDauTimeT() > b.getThoiGianBatDauTimeT();
 }
 
 // Sắp xếp theo thời gian

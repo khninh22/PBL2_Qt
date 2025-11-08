@@ -100,8 +100,8 @@ MangDong<SanBong> SanBongManager::timSanTrong(int loaiSan, time_t batDau, time_t
             const LichDatSan &lich = dsLichDat[j];
             if (lich.getMaSan() == san.getMaSan() && lich.getTrangThaiTT() != "Đã Hủy")
             {
-                time_t lichBatDau = lich.getThoiGianBatDau();
-                time_t lichKetThuc = lich.getThoiGianKetThuc();
+                time_t lichBatDau = lich.getThoiGianBatDauTimeT();    // ✅ Backward compatible
+                time_t lichKetThuc = lich.getThoiGianKetThucTimeT();  // ✅ Backward compatible
 
                 // Kiểm tra chồng lấn thời gian
                 if (!(ketThuc <= lichBatDau || batDau >= lichKetThuc))

@@ -75,8 +75,8 @@ bool DichVuManager::themDichVuVaoLich(const string &maLichDat, const string &maD
     if (dv == nullptr || !dv->getConHang())
         return false;
 
-    // Thêm chi tiết dịch vụ
-    ChiTietDichVu ct(maLichDat, maDV, soLuong, dv->getGiaDV());
+    // ✅ NEW: Thêm chi tiết dịch vụ với OBJECT POINTER
+    ChiTietDichVu ct(maLichDat, dv, soLuong, dv->getGiaDV());
     dsChiTietDichVu.them(ct);
 
     // Cập nhật tổng tiền lịch đặt

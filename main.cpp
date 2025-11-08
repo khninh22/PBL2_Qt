@@ -12,13 +12,22 @@ int main(int argc, char *argv[])
     // Đảm bảo đọc/ghi file data/ từ đúng vị trí (build/bin/)
     QDir::setCurrent(QCoreApplication::applicationDirPath());
 
-    // Khởi tạo hệ thống quản lý
-    QuanLyThueSan quanLy;
+    // ✅ DEBUG: Try-catch to catch initialization errors
+    QuanLyThueSan *quanLy = nullptr;
+    try {
+        quanLy = new QuanLyThueSan();
+    } catch (const std::exception &e) {
+        qDebug() << "ERROR initializing QuanLyThueSan:" << e.what();
+        return -1;
+    } catch (...) {
+        qDebug() << "UNKNOWN ERROR initializing QuanLyThueSan";
+        return -1;
+    }
 
     while (true)
     {
         // Hiển thị màn hình đăng nhập
-        LoginDialog loginDialog(&quanLy);
+        LoginDialog loginDialog(quanLy);
 
         if (loginDialog.exec() != QDialog::Accepted)
         {
@@ -52,5 +61,6 @@ int main(int argc, char *argv[])
         }
     }
 
+    delete quanLy; // ✅ Cleanup
     return 0;
 }

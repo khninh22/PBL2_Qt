@@ -21,7 +21,8 @@ bool NhanVienManager::themNhanVien(const string &maNV, const string &hoTen, cons
     if (timNhanVien(maNV) != nullptr)
         return false;
 
-    NhanVien nv(maNV, hoTen, sdt, viTri, luong, true, taiKhoan, matKhau); // dangLam = true
+    // ✅ FIXED: Thêm diaChi="" parameter (từ ConNguoi inheritance)
+    NhanVien nv(maNV, hoTen, sdt, "", viTri, luong, true, taiKhoan, matKhau); // dangLam = true, diaChi = ""
     dsNhanVien.them(nv);
     
     // Cập nhật index

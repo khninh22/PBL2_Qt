@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+﻿#include "MainWindow.h"
 #include "SanBongDialog.h"
 #include "KhachHangDialog.h"
 #include "SanBookingDialog.h"
@@ -6,7 +6,9 @@
 #include "NhanVienDialog.h"
 #include "PaymentDialog.h"
 #include "ThongKeDialog.h"
+#include "RestoreDialog.h"
 #include <QMenuBar>
+#include <QMenu>
 #include <QToolBar>
 #include <QStatusBar>
 #include <QAction>
@@ -18,9 +20,36 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QApplication>
+#include <QMouseEvent>
+
+// Helper class for clickable widgets
+class ClickableWidget : public QObject
+{
+public:
+    ClickableWidget(QObject *parent, std::function<void()> callback)
+        : QObject(parent), m_callback(callback) {}
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override
+    {
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton)
+            {
+                m_callback();
+                return true;
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+
+private:
+    std::function<void()> m_callback;
+};
 
 MainWindow::MainWindow(AuthManager *auth, QWidget *parent)
-    : QMainWindow(parent), authManager(auth), sidebarVisible(true) // Start with sidebar visible
+    : QMainWindow(parent), authManager(auth)
 {
     quanLy = new QuanLyThueSan();
     setupUI();
@@ -151,40 +180,22 @@ void MainWindow::setupSidebar()
     sidebarLayout->setContentsMargins(0, 0, 0, 0);
     sidebarLayout->setSpacing(0);
 
-    // Header with hamburger button and logo
+    // Header with logo only
     QWidget *headerWidget = new QWidget();
     headerWidget->setStyleSheet("background-color: #1a252f;");
     QHBoxLayout *headerLayout = new QHBoxLayout(headerWidget);
-    headerLayout->setContentsMargins(10, 15, 10, 15);
-    headerLayout->setSpacing(10);
+    headerLayout->setContentsMargins(15, 20, 15, 20);
+    headerLayout->setSpacing(0);
 
-    // Hamburger button
-    btnToggleSidebar = new QPushButton("☰");
-    btnToggleSidebar->setFixedSize(50, 50);
-    btnToggleSidebar->setStyleSheet(
-        "QPushButton {"
-        "    background-color: transparent;"
-        "    color: white;"
-        "    border: none;"
-        "    border-radius: 8px;"
-        "    font-size: 24px;"
-        "    font-weight: bold;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: rgba(255, 255, 255, 0.1);"
-        "}");
-    connect(btnToggleSidebar, &QPushButton::clicked, this, &MainWindow::toggleSidebar);
-
-    lblLogo = new QLabel("QUẢN LÝ SÂN");
+    QLabel *lblLogo = new QLabel("⚽ QUẢN LÝ SÂN BÓNG");
     lblLogo->setStyleSheet(
         "color: white;"
-        "font-size: 20px;"
+        "font-size: 16px;"
         "font-weight: bold;"
         "background-color: transparent;");
+    lblLogo->setAlignment(Qt::AlignCenter);
 
-    headerLayout->addWidget(btnToggleSidebar);
     headerLayout->addWidget(lblLogo);
-    headerLayout->addStretch();
 
     sidebarLayout->addWidget(headerWidget);
 
@@ -201,32 +212,33 @@ void MainWindow::setupSidebar()
     btnMenuNhanVien = createMenuButton("👔", "Nhân Viên", 4);
     btnMenuThongKe = createMenuButton("📊", "Thống Kê", 5);
 
-    menuLayout->addWidget(btnMenuSanBong);
-    menuLayout->addWidget(btnMenuKhachHang);
-    menuLayout->addWidget(btnMenuLichDat);
-    menuLayout->addWidget(btnMenuDichVu);
-    menuLayout->addWidget(btnMenuNhanVien);
-    menuLayout->addWidget(btnMenuThongKe);
+    menuLayout->addWidget(btnMenuSanBong.button);
+    menuLayout->addWidget(btnMenuKhachHang.button);
+    menuLayout->addWidget(btnMenuLichDat.button);
+    menuLayout->addWidget(btnMenuDichVu.button);
+    menuLayout->addWidget(btnMenuNhanVien.button);
+    menuLayout->addWidget(btnMenuThongKe.button);
     menuLayout->addStretch();
 
-    // Logout button at bottom
-    btnMenuLogout = new QPushButton("🚪 Đăng Xuất");
-    btnMenuLogout->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #e74c3c;"
-        "    color: white;"
-        "    border: none;"
-        "    padding: 12px;"
-        "    border-radius: 6px;"
-        "    font-weight: bold;"
-        "    font-size: 13px;"
-        "    text-align: left;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #c0392b;"
-        "}");
-    connect(btnMenuLogout, &QPushButton::clicked, this, &MainWindow::onLogout);
-    menuLayout->addWidget(btnMenuLogout);
+    // ✅ Backup button - using MenuButton struct
+    btnMenuBackup = createSpecialButton("💾", "Sao Lưu & Khôi Phục", "#f39c12", [this]() {
+        // Show menu on click
+        QMenu *backupMenu = new QMenu(this);
+        QAction *actBackup = new QAction("💾 Tạo Bản Sao Lưu", this);
+        QAction *actRestore = new QAction("♻️ Khôi Phục Dữ Liệu", this);
+        backupMenu->addAction(actBackup);
+        backupMenu->addAction(actRestore);
+        connect(actBackup, &QAction::triggered, this, &MainWindow::onBackupData);
+        connect(actRestore, &QAction::triggered, this, &MainWindow::onRestoreData);
+        backupMenu->exec(QCursor::pos());
+    });
+    menuLayout->addWidget(btnMenuBackup.button);
+
+    // ✅ Logout button - using MenuButton struct
+    btnMenuLogout = createSpecialButton("🚪", "Đăng Xuất", "#e74c3c", [this]() {
+        onLogout();
+    });
+    menuLayout->addWidget(btnMenuLogout.button);
 
     sidebarLayout->addWidget(menuWidget, 1);
 }
@@ -245,240 +257,111 @@ void MainWindow::setupContent()
     stackedWidget->addWidget(createThongKePage());
 }
 
-QPushButton *MainWindow::createMenuButton(const QString &icon, const QString &text, int pageIndex)
+MainWindow::MenuButton MainWindow::createMenuButton(const QString &icon, const QString &text, int pageIndex)
 {
-    QPushButton *btn = new QPushButton(icon + "  " + text);
-    btn->setStyleSheet(
+    MenuButton menuBtn;
+    
+    // Single button with icon and text together
+    menuBtn.button = new QPushButton(icon + "  " + text);
+    menuBtn.button->setMinimumHeight(50);
+    menuBtn.button->setCursor(Qt::PointingHandCursor);
+    menuBtn.button->setStyleSheet(
         "QPushButton {"
         "    background-color: transparent;"
-        "    color: #ecf0f1;"
+        "    color: #bdc3c7;"
         "    border: none;"
-        "    padding: 15px 20px;"
-        "    text-align: left;"
-        "    font-size: 14px;"
-        "    font-weight: bold;"
         "    border-radius: 8px;"
+        "    text-align: left;"
+        "    padding-left: 15px;"
+        "    font-size: 14px;"
+        "    font-weight: normal;"
         "}"
         "QPushButton:hover {"
         "    background-color: #34495e;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #4CAF50;"
         "}");
-
-    connect(btn, &QPushButton::clicked, [this, pageIndex]()
-            { navigateToPage(pageIndex); });
-
-    menuButtons.append(btn);
-    return btn;
+    
+    connect(menuBtn.button, &QPushButton::clicked, [this, pageIndex]() {
+        navigateToPage(pageIndex);
+    });
+    
+    menuBtn.container = menuBtn.button; // Container is the button itself
+    menuBtn.label = nullptr; // No separate label
+    
+    menuButtons.append(menuBtn);
+    return menuBtn;
 }
 
-void MainWindow::toggleSidebar()
+// Helper function for special buttons (Backup, Logout)
+MainWindow::MenuButton MainWindow::createSpecialButton(const QString &icon, const QString &text, const QString &color, std::function<void()> callback)
 {
-    int targetWidth = sidebarVisible ? 70 : 250; // 60px when collapsed (just icons)
-
-    QPropertyAnimation *animation = new QPropertyAnimation(sidebar, "minimumWidth");
-    animation->setDuration(300);
-    animation->setStartValue(sidebar->width());
-    animation->setEndValue(targetWidth);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-    animation->start(QAbstractAnimation::DeleteWhenStopped);
-
-    QPropertyAnimation *animation2 = new QPropertyAnimation(sidebar, "maximumWidth");
-    animation2->setDuration(300);
-    animation2->setStartValue(sidebar->width());
-    animation2->setEndValue(targetWidth);
-    animation2->setEasingCurve(QEasingCurve::InOutQuad);
-    animation2->start(QAbstractAnimation::DeleteWhenStopped);
-
-    sidebarVisible = !sidebarVisible;
-
-    // Update hamburger button and logo visibility
-    if (sidebarVisible)
-    {
-        // Expanded - show logo and full text in buttons
-        btnToggleSidebar->setText("☰");
-        lblLogo->setVisible(true);
-
-        // Enable all menu buttons
-        for (auto btn : menuButtons)
-        {
-            btn->setEnabled(true);
-        }
-        if (btnMenuLogout)
-            btnMenuLogout->setEnabled(true);
-
-        // Update all menu buttons to show icon + text
-        if (btnMenuSanBong)
-            btnMenuSanBong->setText("⚽  Sân Bóng");
-        if (btnMenuKhachHang)
-            btnMenuKhachHang->setText("👥  Khách Hàng");
-        if (btnMenuLichDat)
-            btnMenuLichDat->setText("📅  Đặt Sân");
-        if (btnMenuDichVu)
-            btnMenuDichVu->setText("🍔  Dịch Vụ");
-        if (btnMenuNhanVien)
-            btnMenuNhanVien->setText("👔  Nhân Viên");
-        if (btnMenuThongKe)
-            btnMenuThongKe->setText("📊  Thống Kê");
-        if (btnMenuLogout)
-            btnMenuLogout->setText("🚪 Đăng Xuất");
-
-        // Reset menu button styles to show text align left
-        for (auto btn : menuButtons)
-        {
-            btn->setStyleSheet(
-                "QPushButton {"
-                "    background-color: transparent;"
-                "    color: #ecf0f1;"
-                "    border: none;"
-                "    padding: 15px 20px;"
-                "    text-align: left;"
-                "    font-size: 14px;"
-                "    font-weight: bold;"
-                "    border-radius: 8px;"
-                "}"
-                "QPushButton:hover {"
-                "    background-color: #34495e;"
-                "}"
-                "QPushButton:pressed {"
-                "    background-color: #4CAF50;"
-                "}");
-        }
-        // Re-highlight current page
-        navigateToPage(stackedWidget->currentIndex());
-    }
-    else
-    {
-        // Collapsed - hide logo, show only hamburger icon
-        btnToggleSidebar->setText("☰");
-        lblLogo->setVisible(false);
-
-        // Disable all menu buttons (cannot click when collapsed)
-        for (auto btn : menuButtons)
-        {
-            btn->setEnabled(false);
-        }
-        if (btnMenuLogout)
-            btnMenuLogout->setEnabled(false);
-
-        // Update all menu buttons to show only icons (centered)
-        if (btnMenuSanBong)
-            btnMenuSanBong->setText("⚽");
-        if (btnMenuKhachHang)
-            btnMenuKhachHang->setText("👥");
-        if (btnMenuLichDat)
-            btnMenuLichDat->setText("📅");
-        if (btnMenuDichVu)
-            btnMenuDichVu->setText("🍔");
-        if (btnMenuNhanVien)
-            btnMenuNhanVien->setText("👔");
-        if (btnMenuThongKe)
-            btnMenuThongKe->setText("📊");
-        if (btnMenuLogout)
-            btnMenuLogout->setText("🚪");
-
-        // Center icons within collapsed sidebar to avoid being cut off
-        for (auto btn : menuButtons)
-        {
-            btn->setStyleSheet(
-                "QPushButton {"
-                "    background-color: transparent;"
-                "    color: #7f8c8d;" // Dimmed color when disabled
-                "    border: none;"
-                "    padding: 15px;"      // Equal padding for centering
-                "    text-align: center;" // Center to fit within 70px width
-                "    font-size: 14px;"    // Same icon size as when expanded
-                "    font-weight: bold;"
-                "    border-radius: 8px;"
-                "}"
-                "QPushButton:disabled {"
-                "    color: #7f8c8d;"
-                "}");
-        }
-    }
-
-    // Update logout button style
-    if (btnMenuLogout)
-    {
-        if (sidebarVisible)
-        {
-            btnMenuLogout->setStyleSheet(
-                "QPushButton {"
-                "    background-color: #e74c3c;"
-                "    color: white;"
-                "    border: none;"
-                "    padding: 12px;"
-                "    border-radius: 6px;"
-                "    font-weight: bold;"
-                "    font-size: 13px;"
-                "    text-align: left;"
-                "}"
-                "QPushButton:hover {"
-                "    background-color: #c0392b;"
-                "}");
-        }
-        else
-        {
-            btnMenuLogout->setStyleSheet(
-                "QPushButton {"
-                "    background-color: #e74c3c;" // Keep red color when disabled
-                "    color: white;"
-                "    border: none;"
-                "    padding: 12px;"
-                "    border-radius: 6px;"
-                "    font-weight: bold;"
-                "    font-size: 14px;"    // Same icon size as when expanded
-                "    text-align: center;" // Center to fit within 70px width
-                "}"
-                "QPushButton:disabled {"
-                "    background-color: #e74c3c;" // Keep red even when disabled
-                "    color: #ecf0f1;"
-                "}");
-        }
-    }
+    MenuButton menuBtn;
+    
+    // Single button with icon and text together
+    menuBtn.button = new QPushButton(icon + "  " + text);
+    menuBtn.button->setMinimumHeight(54);
+    menuBtn.button->setCursor(Qt::PointingHandCursor);
+    menuBtn.button->setStyleSheet(
+        QString("QPushButton {"
+        "    background-color: %1;"
+        "    color: white;"
+        "    border: none;"
+        "    border-radius: 8px;"
+        "    text-align: left;"
+        "    padding-left: 15px;"
+        "    font-size: 14px;"
+        "    font-weight: bold;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: %2;"
+        "}").arg(color).arg(color == "#f39c12" ? "#e67e22" : "#c0392b"));
+    
+    connect(menuBtn.button, &QPushButton::clicked, callback);
+    
+    menuBtn.container = menuBtn.button; // Container is the button itself
+    menuBtn.label = nullptr; // No separate label
+    
+    return menuBtn;
 }
 
 void MainWindow::navigateToPage(int index)
 {
     stackedWidget->setCurrentIndex(index);
 
-    // Only highlight active button if sidebar is expanded
-    if (!sidebarVisible)
-    {
-        // Sidebar collapsed - no highlight, just update icons
-        return;
-    }
-
-    // Highlight active button (only when sidebar is expanded)
+    // Highlight active menu item
     for (int i = 0; i < menuButtons.size(); i++)
     {
         if (i == index)
         {
-            menuButtons[i]->setStyleSheet(
+            // Active item - green background with left border
+            menuButtons[i].button->setStyleSheet(
                 "QPushButton {"
-                "    background-color: #4CAF50;"
+                "    background-color: #1abc9c;"
                 "    color: white;"
                 "    border: none;"
-                "    padding: 15px 20px;"
+                "    border-left: 4px solid #ffffff;"
+                "    border-radius: 8px;"
                 "    text-align: left;"
+                "    padding-left: 15px;"
                 "    font-size: 14px;"
                 "    font-weight: bold;"
-                "    border-radius: 8px;"
+                "}"
+                "QPushButton:hover {"
+                "    background-color: #16a085;"
                 "}");
         }
         else
         {
-            menuButtons[i]->setStyleSheet(
+            // Inactive item - transparent with hover
+            menuButtons[i].button->setStyleSheet(
                 "QPushButton {"
                 "    background-color: transparent;"
-                "    color: #ecf0f1;"
+                "    color: #bdc3c7;"
                 "    border: none;"
-                "    padding: 15px 20px;"
-                "    text-align: left;"
-                "    font-size: 14px;"
-                "    font-weight: bold;"
                 "    border-radius: 8px;"
+                "    text-align: left;"
+                "    padding-left: 15px;"
+                "    font-size: 14px;"
+                "    font-weight: normal;"
                 "}"
                 "QPushButton:hover {"
                 "    background-color: #34495e;"
@@ -492,18 +375,10 @@ QWidget *MainWindow::createSanBongPage()
     QWidget *widget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    // Buttons
+    // Buttons - Chỉ giữ nút Thêm
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnThemSan = new QPushButton("➕ Thêm Sân");
-    btnSuaSan = new QPushButton("✏️ Sửa Sân");
-    btnXoaSan = new QPushButton("❌ Xóa Sân");
-    btnXoaSan->setProperty("class", "delete");
-    btnBaoTri = new QPushButton("🔧 Bảo Trì");
-
     btnLayout->addWidget(btnThemSan);
-    btnLayout->addWidget(btnSuaSan);
-    btnLayout->addWidget(btnXoaSan);
-    btnLayout->addWidget(btnBaoTri);
     btnLayout->addStretch();
 
     // Table
@@ -527,9 +402,8 @@ QWidget *MainWindow::createSanBongPage()
 
     // Connections
     connect(btnThemSan, &QPushButton::clicked, this, &MainWindow::onThemSanBong);
-    connect(btnSuaSan, &QPushButton::clicked, this, &MainWindow::onSuaSanBong);
-    connect(btnXoaSan, &QPushButton::clicked, this, &MainWindow::onXoaSanBong);
-    connect(btnBaoTri, &QPushButton::clicked, this, &MainWindow::onBaoTriSan);
+    // Double-click vào row để xem chi tiết
+    connect(tableSanBong, &QTableWidget::cellDoubleClicked, this, &MainWindow::onSanBongRowDoubleClicked);
 
     return widget;
 }
@@ -539,16 +413,10 @@ QWidget *MainWindow::createKhachHangPage()
     QWidget *widget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    // Buttons
+    // Buttons - Chỉ giữ nút Thêm
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnThemKH = new QPushButton("➕ Thêm Khách Hàng");
-    btnSuaKH = new QPushButton("✏️ Sửa Khách Hàng");
-    btnXoaKH = new QPushButton("❌ Xóa Khách Hàng");
-    btnXoaKH->setProperty("class", "delete");
-
     btnLayout->addWidget(btnThemKH);
-    btnLayout->addWidget(btnSuaKH);
-    btnLayout->addWidget(btnXoaKH);
     btnLayout->addStretch();
 
     // Table
@@ -572,8 +440,8 @@ QWidget *MainWindow::createKhachHangPage()
 
     // Connections
     connect(btnThemKH, &QPushButton::clicked, this, &MainWindow::onThemKhachHang);
-    connect(btnSuaKH, &QPushButton::clicked, this, &MainWindow::onSuaKhachHang);
-    connect(btnXoaKH, &QPushButton::clicked, this, &MainWindow::onXoaKhachHang);
+    // Double-click vào row để xem chi tiết
+    connect(tableKhachHang, &QTableWidget::cellDoubleClicked, this, &MainWindow::onKhachHangRowDoubleClicked);
 
     return widget;
 }
@@ -632,16 +500,10 @@ QWidget *MainWindow::createDichVuPage()
     QWidget *widget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    // Buttons
+    // Buttons - Chỉ giữ nút Thêm
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnThemDV = new QPushButton("➕ Thêm Dịch Vụ");
-    btnSuaDV = new QPushButton("✏️   Sửa Dịch Vụ");
-    btnXoaDV = new QPushButton("❌ Xóa Dịch Vụ");
-    btnXoaDV->setProperty("class", "delete");
-
     btnLayout->addWidget(btnThemDV);
-    btnLayout->addWidget(btnSuaDV);
-    btnLayout->addWidget(btnXoaDV);
     btnLayout->addStretch();
 
     // Table
@@ -665,8 +527,8 @@ QWidget *MainWindow::createDichVuPage()
 
     // Connections
     connect(btnThemDV, &QPushButton::clicked, this, &MainWindow::onThemDichVu);
-    connect(btnSuaDV, &QPushButton::clicked, this, &MainWindow::onSuaDichVu);
-    connect(btnXoaDV, &QPushButton::clicked, this, &MainWindow::onXoaDichVu);
+    // Double-click vào row để xem chi tiết
+    connect(tableDichVu, &QTableWidget::cellDoubleClicked, this, &MainWindow::onDichVuRowDoubleClicked);
 
     return widget;
 }
@@ -676,16 +538,10 @@ QWidget *MainWindow::createNhanVienPage()
     QWidget *widget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    // Buttons
+    // Buttons - Chỉ giữ nút Thêm
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnThemNV = new QPushButton("➕ Thêm Nhân Viên");
-    btnSuaNV = new QPushButton("✏️ Sửa Nhân Viên");
-    btnXoaNV = new QPushButton("❌ Xóa Nhân Viên");
-    btnXoaNV->setProperty("class", "delete");
-
     btnLayout->addWidget(btnThemNV);
-    btnLayout->addWidget(btnSuaNV);
-    btnLayout->addWidget(btnXoaNV);
     btnLayout->addStretch();
 
     // Table
@@ -710,8 +566,8 @@ QWidget *MainWindow::createNhanVienPage()
 
     // Connections
     connect(btnThemNV, &QPushButton::clicked, this, &MainWindow::onThemNhanVien);
-    connect(btnSuaNV, &QPushButton::clicked, this, &MainWindow::onSuaNhanVien);
-    connect(btnXoaNV, &QPushButton::clicked, this, &MainWindow::onXoaNhanVien);
+    // Double-click vào row để xem chi tiết
+    connect(tableNhanVien, &QTableWidget::cellDoubleClicked, this, &MainWindow::onNhanVienRowDoubleClicked);
 
     return widget;
 }
@@ -794,8 +650,8 @@ void MainWindow::updateSanBongTable()
         int row = tableSanBong->rowCount();
         tableSanBong->insertRow(row);
 
-        tableSanBong->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(san.getMaSan())));
-        tableSanBong->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(san.getTenSan())));
+        tableSanBong->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(san.getMaSan().c_str())));
+        tableSanBong->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(san.getTenSan().c_str())));
         tableSanBong->setItem(row, 2, new QTableWidgetItem(QString("Sân %1 người").arg(san.getLoaiSan())));
         tableSanBong->setItem(row, 3, new QTableWidgetItem(QString::number(san.getGiaThue(), 'f', 0) + " VNĐ"));
         tableSanBong->setItem(row, 4, new QTableWidgetItem(san.getBaoTri() ? "Đang Bảo Trì" : "Hoạt Động"));
@@ -813,11 +669,11 @@ void MainWindow::updateKhachHangTable()
         int row = tableKhachHang->rowCount();
         tableKhachHang->insertRow(row);
 
-        tableKhachHang->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(kh.getMaKH())));
-        tableKhachHang->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(kh.getHoTen())));
-        tableKhachHang->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(kh.getSdt())));
+        tableKhachHang->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(kh.getMaKH().c_str())));
+        tableKhachHang->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(kh.getHoTen().c_str())));
+        tableKhachHang->setItem(row, 2, new QTableWidgetItem(QString::fromUtf8(kh.getSdt().c_str())));
         tableKhachHang->setItem(row, 3, new QTableWidgetItem(QString::number(kh.getDiemTichLuy())));
-        tableKhachHang->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(kh.getTenCapDo())));
+        tableKhachHang->setItem(row, 4, new QTableWidgetItem(QString::fromUtf8(kh.getTenCapDo().c_str())));
     }
 }
 
@@ -834,24 +690,25 @@ void MainWindow::updateLichDatTable()
 
         // Lấy thông tin khách hàng
         KhachHang *kh = quanLy->timKhachHang(lich.getMaKH());
-        QString tenKH = kh ? QString::fromStdString(kh->getHoTen()) : "N/A";
-        QString sdtKH = kh ? QString::fromStdString(kh->getSdt()) : "N/A";
+        QString tenKH = kh ? QString::fromUtf8(kh->getHoTen().c_str()) : "N/A";
+        QString sdtKH = kh ? QString::fromUtf8(kh->getSdt().c_str()) : "N/A";
 
-        tableLichDat->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(lich.getMaLichDat())));
-        tableLichDat->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(lich.getMaKH())));
+        tableLichDat->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(lich.getMaLichDat().c_str())));
+        tableLichDat->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(lich.getMaKH().c_str())));
         tableLichDat->setItem(row, 2, new QTableWidgetItem(tenKH));
         tableLichDat->setItem(row, 3, new QTableWidgetItem(sdtKH));
-        tableLichDat->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(lich.getMaSan())));
+        tableLichDat->setItem(row, 4, new QTableWidgetItem(QString::fromUtf8(lich.getMaSan().c_str())));
 
-        QString batDau = QString::fromStdString(formatTime(lich.getThoiGianBatDau()));
-        QString ketThuc = QString::fromStdString(formatTime(lich.getThoiGianKetThuc()));
+        // ✅ NEW: Use NgayGio::toString() instead of formatTime(time_t)
+        QString batDau = QString::fromUtf8(lich.getThoiGianBatDau().toString().c_str());
+        QString ketThuc = QString::fromUtf8(lich.getThoiGianKetThuc().toString().c_str());
 
         tableLichDat->setItem(row, 5, new QTableWidgetItem(batDau));
         tableLichDat->setItem(row, 6, new QTableWidgetItem(ketThuc));
         tableLichDat->setItem(row, 7, new QTableWidgetItem(QString("%L1 VNĐ").arg(lich.getTongTien(), 0, 'f', 0)));
         
         // Trạng thái đặt với màu
-        QTableWidgetItem *itemTTDat = new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiDat()));
+        QTableWidgetItem *itemTTDat = new QTableWidgetItem(QString::fromUtf8(lich.getTrangThaiDat().c_str()));
         if (lich.getTrangThaiDat() == "Đã Hủy")
             itemTTDat->setForeground(QBrush(QColor("#f44336")));
         else
@@ -859,7 +716,7 @@ void MainWindow::updateLichDatTable()
         tableLichDat->setItem(row, 8, itemTTDat);
         
         // Trạng thái thanh toán với màu
-        QTableWidgetItem *itemTTTT = new QTableWidgetItem(QString::fromStdString(lich.getTrangThaiTT()));
+        QTableWidgetItem *itemTTTT = new QTableWidgetItem(QString::fromUtf8(lich.getTrangThaiTT().c_str()));
         if (lich.getTrangThaiTT() == "Đã Thanh Toán")
         {
             itemTTTT->setForeground(QBrush(QColor("#4CAF50")));
@@ -885,9 +742,9 @@ void MainWindow::updateDichVuTable()
         int row = tableDichVu->rowCount();
         tableDichVu->insertRow(row);
 
-        tableDichVu->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(dv.getMaDV())));
-        tableDichVu->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(dv.getTenDV())));
-        tableDichVu->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(dv.getLoaiDV())));
+        tableDichVu->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(dv.getMaDV().c_str())));
+        tableDichVu->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(dv.getTenDV().c_str())));
+        tableDichVu->setItem(row, 2, new QTableWidgetItem(QString::fromUtf8(dv.getLoaiDV().c_str())));
         tableDichVu->setItem(row, 3, new QTableWidgetItem(QString::number(dv.getGiaDV(), 'f', 0) + " VNĐ"));
         tableDichVu->setItem(row, 4, new QTableWidgetItem(dv.getConHang() ? "Còn Hàng" : "Hết Hàng"));
     }
@@ -904,10 +761,10 @@ void MainWindow::updateNhanVienTable()
         int row = tableNhanVien->rowCount();
         tableNhanVien->insertRow(row);
 
-        tableNhanVien->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(nv.getMaNV())));
-        tableNhanVien->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(nv.getHoTen())));
-        tableNhanVien->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(nv.getSdt())));
-        tableNhanVien->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(nv.getViTri())));
+        tableNhanVien->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(nv.getMaNV().c_str())));
+        tableNhanVien->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(nv.getHoTen().c_str())));
+        tableNhanVien->setItem(row, 2, new QTableWidgetItem(QString::fromUtf8(nv.getSdt().c_str())));
+        tableNhanVien->setItem(row, 3, new QTableWidgetItem(QString::fromUtf8(nv.getViTri().c_str())));
         tableNhanVien->setItem(row, 4, new QTableWidgetItem(QString::number(nv.getLuongCoBan(), 'f', 0) + " VNĐ"));
         tableNhanVien->setItem(row, 5, new QTableWidgetItem(nv.getDangLam() ? "Đang Làm" : "Đã Nghỉ"));
     }
@@ -935,7 +792,7 @@ void MainWindow::updateThongKeDisplay()
 // Slot implementations (continue in next part due to length)
 void MainWindow::onThemSanBong()
 {
-    SanBongDialog dialog(this);
+    SanBongDialog dialog(quanLy, this);
     if (dialog.exec() == QDialog::Accepted)
     {
         if (quanLy->themSanBong(dialog.getMaSan(), dialog.getTenSan(),
@@ -965,7 +822,7 @@ void MainWindow::onSuaSanBong()
 
     if (san)
     {
-        SanBongDialog dialog(this, san);
+        SanBongDialog dialog(quanLy, this, san);
         if (dialog.exec() == QDialog::Accepted)
         {
             if (quanLy->suaSanBong(maSan.toStdString(), dialog.getTenSan(),
@@ -1036,10 +893,118 @@ void MainWindow::onRefreshSanBong()
     updateSanBongTable();
 }
 
+// NEW: Xử lý double-click vào row sân bóng
+void MainWindow::onSanBongRowDoubleClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    if (row < 0) return;
+
+    QString maSan = tableSanBong->item(row, 0)->text();
+    SanBong *san = quanLy->timSanBong(maSan.toStdString());
+
+    if (!san) return;
+
+    // Tạo dialog chi tiết với các nút chức năng
+    QDialog *detailDialog = new QDialog(this);
+    detailDialog->setWindowTitle("Chi Tiết Sân Bóng");
+    detailDialog->setMinimumWidth(500);
+    
+    QVBoxLayout *layout = new QVBoxLayout(detailDialog);
+    
+    // Hiển thị thông tin chi tiết
+    QGroupBox *infoGroup = new QGroupBox("📋 Thông Tin Sân");
+    QGridLayout *grid = new QGridLayout(infoGroup);
+    
+    grid->addWidget(new QLabel("<b>Mã Sân:</b>"), 0, 0);
+    grid->addWidget(new QLabel(QString::fromUtf8(san->getMaSan().c_str())), 0, 1);
+    
+    grid->addWidget(new QLabel("<b>Tên Sân:</b>"), 1, 0);
+    grid->addWidget(new QLabel(QString::fromUtf8(san->getTenSan().c_str())), 1, 1);
+    
+    grid->addWidget(new QLabel("<b>Loại Sân:</b>"), 2, 0);
+    grid->addWidget(new QLabel(QString("Sân %1 người").arg(san->getLoaiSan())), 2, 1);
+    
+    grid->addWidget(new QLabel("<b>Giá Thuê:</b>"), 3, 0);
+    grid->addWidget(new QLabel(QString::number(san->getGiaThue(), 'f', 0) + " VNĐ"), 3, 1);
+    
+    grid->addWidget(new QLabel("<b>Trạng Thái:</b>"), 4, 0);
+    QLabel *statusLabel = new QLabel(san->getBaoTri() ? "🔧 Đang Bảo Trì" : "✅ Hoạt Động");
+    statusLabel->setStyleSheet(san->getBaoTri() ? "color: #f39c12;" : "color: #27ae60;");
+    grid->addWidget(statusLabel, 4, 1);
+    
+    layout->addWidget(infoGroup);
+    
+    // Các nút chức năng
+    QHBoxLayout *btnLayout = new QHBoxLayout();
+    QPushButton *btnEdit = new QPushButton("✏️ Sửa");
+    QPushButton *btnDelete = new QPushButton("❌ Xóa");
+    QPushButton *btnMaintenance = new QPushButton(san->getBaoTri() ? "🔓 Tắt Bảo Trì" : "🔧 Bật Bảo Trì");
+    QPushButton *btnClose = new QPushButton("Đóng");
+    
+    btnDelete->setProperty("class", "delete");
+    
+    btnLayout->addWidget(btnEdit);
+    btnLayout->addWidget(btnDelete);
+    btnLayout->addWidget(btnMaintenance);
+    btnLayout->addStretch();
+    btnLayout->addWidget(btnClose);
+    
+    layout->addLayout(btnLayout);
+    
+    // Kết nối các nút
+    connect(btnEdit, &QPushButton::clicked, [this, maSan, detailDialog]() {
+        detailDialog->accept();
+        SanBong *s = quanLy->timSanBong(maSan.toStdString());
+        if (s) {
+            SanBongDialog dialog(quanLy, this, s);
+            if (dialog.exec() == QDialog::Accepted) {
+                if (quanLy->suaSanBong(maSan.toStdString(), dialog.getTenSan(),
+                                       dialog.getLoaiSan(), dialog.getGiaThue())) {
+                    updateSanBongTable(); // Reload dữ liệu ngay
+                    QMessageBox::information(this, "Thành công", "Đã cập nhật sân bóng!");
+                }
+            }
+        }
+    });
+    
+    connect(btnDelete, &QPushButton::clicked, [this, maSan, detailDialog]() {
+        auto reply = QMessageBox::question(detailDialog, "Xác nhận",
+                                           "Bạn có chắc muốn xóa sân này?",
+                                           QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            if (quanLy->xoaSanBong(maSan.toStdString())) {
+                updateSanBongTable(); // Reload dữ liệu ngay
+                QMessageBox::information(detailDialog, "Thành công", "Đã xóa sân bóng!");
+                detailDialog->accept();
+            }
+        }
+    });
+    
+    connect(btnMaintenance, &QPushButton::clicked, [this, maSan, detailDialog]() {
+        SanBong *s = quanLy->timSanBong(maSan.toStdString());
+        if (s) {
+            if (s->getBaoTri()) {
+                quanLy->tatBaoTriSan(maSan.toStdString());
+                QMessageBox::information(detailDialog, "Thành công", "Đã tắt chế độ bảo trì!");
+            } else {
+                quanLy->batBaoTriSan(maSan.toStdString());
+                QMessageBox::information(detailDialog, "Thành công", "Đã bật chế độ bảo trì!");
+            }
+            updateSanBongTable(); // Reload dữ liệu ngay
+            detailDialog->accept();
+        }
+    });
+    
+    connect(btnClose, &QPushButton::clicked, detailDialog, &QDialog::accept);
+    
+    detailDialog->exec();
+    delete detailDialog;
+}
+
 // Similar implementations for other slot methods...
 void MainWindow::onThemKhachHang()
 {
-    KhachHangDialog dialog(this);
+    KhachHangDialog dialog(quanLy, this);
     if (dialog.exec() == QDialog::Accepted)
     {
         if (quanLy->themKhachHang(dialog.getMaKH(), dialog.getHoTen(), dialog.getSdt()))
@@ -1068,7 +1033,7 @@ void MainWindow::onSuaKhachHang()
 
     if (kh)
     {
-        KhachHangDialog dialog(this, kh);
+        KhachHangDialog dialog(quanLy, this, kh);
         if (dialog.exec() == QDialog::Accepted)
         {
             if (quanLy->suaKhachHang(maKH.toStdString(), dialog.getHoTen(), dialog.getSdt()))
@@ -1110,6 +1075,110 @@ void MainWindow::onRefreshKhachHang()
     updateKhachHangTable();
 }
 
+void MainWindow::onKhachHangRowDoubleClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    
+    if (row < 0 || row >= tableKhachHang->rowCount()) {
+        return;
+    }
+    
+    // Lấy thông tin khách hàng từ row được chọn
+    QString maKH = tableKhachHang->item(row, 0)->text();
+    QString hoTen = tableKhachHang->item(row, 1)->text();
+    QString sdt = tableKhachHang->item(row, 2)->text();
+    QString diemTichLuy = tableKhachHang->item(row, 3)->text();
+    QString capDo = tableKhachHang->item(row, 4)->text();
+    
+    // Tạo dialog chi tiết
+    QDialog *detailDialog = new QDialog(this);
+    detailDialog->setWindowTitle("Chi Tiết Khách Hàng");
+    detailDialog->setMinimumWidth(450);
+    
+    QVBoxLayout *mainLayout = new QVBoxLayout(detailDialog);
+    
+    // Group box hiển thị thông tin
+    QGroupBox *infoGroup = new QGroupBox("Thông Tin Khách Hàng", detailDialog);
+    QGridLayout *infoLayout = new QGridLayout(infoGroup);
+    
+    infoLayout->addWidget(new QLabel("<b>Mã Khách Hàng:</b>"), 0, 0);
+    infoLayout->addWidget(new QLabel(maKH), 0, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Họ Tên:</b>"), 1, 0);
+    infoLayout->addWidget(new QLabel(hoTen), 1, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Số Điện Thoại:</b>"), 2, 0);
+    infoLayout->addWidget(new QLabel(sdt), 2, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Điểm Tích Lũy:</b>"), 3, 0);
+    infoLayout->addWidget(new QLabel(diemTichLuy), 3, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Cấp Độ:</b>"), 4, 0);
+    infoLayout->addWidget(new QLabel(capDo), 4, 1);
+    
+    mainLayout->addWidget(infoGroup);
+    
+    // Buttons
+    QHBoxLayout *btnLayout = new QHBoxLayout();
+    
+    QPushButton *btnEdit = new QPushButton("✏️  Sửa", detailDialog);
+    btnEdit->setStyleSheet("QPushButton { padding: 8px 15px; background: #4CAF50; color: white; border-radius: 4px; }"
+                           "QPushButton:hover { background: #45a049; }");
+    
+    QPushButton *btnDelete = new QPushButton("🗑️  Xóa", detailDialog);
+    btnDelete->setStyleSheet("QPushButton { padding: 8px 15px; background: #f44336; color: white; border-radius: 4px; }"
+                             "QPushButton:hover { background: #da190b; }");
+    
+    QPushButton *btnClose = new QPushButton("❌  Đóng", detailDialog);
+    btnClose->setStyleSheet("QPushButton { padding: 8px 15px; background: #808080; color: white; border-radius: 4px; }"
+                            "QPushButton:hover { background: #606060; }");
+    
+    btnLayout->addWidget(btnEdit);
+    btnLayout->addWidget(btnDelete);
+    btnLayout->addStretch();
+    btnLayout->addWidget(btnClose);
+    
+    mainLayout->addLayout(btnLayout);
+    
+    // Kết nối sự kiện Edit
+    connect(btnEdit, &QPushButton::clicked, detailDialog, [this, maKH, detailDialog]() {
+        KhachHang *kh = quanLy->timKhachHang(maKH.toStdString());
+        if (!kh) {
+            QMessageBox::warning(this, "Lỗi", "Không tìm thấy khách hàng!");
+            return;
+        }
+        KhachHangDialog editDialog(quanLy, this, kh);
+        if (editDialog.exec() == QDialog::Accepted) {
+            updateKhachHangTable();  // ✅ Load lại dữ liệu ngay
+            detailDialog->close();
+            QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin khách hàng!");
+        }
+    });
+    
+    // Kết nối sự kiện Delete
+    connect(btnDelete, &QPushButton::clicked, detailDialog, [this, maKH, hoTen, detailDialog]() {
+        auto reply = QMessageBox::question(this, "Xác nhận", 
+                                          QString("Bạn có chắc muốn xóa khách hàng '%1'?").arg(hoTen),
+                                          QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            try {
+                quanLy->xoaKhachHang(maKH.toStdString());
+                updateKhachHangTable();  // ✅ Load lại dữ liệu ngay
+                detailDialog->close();
+                QMessageBox::information(this, "Thành công", "Đã xóa khách hàng thành công!");
+            } catch (const std::exception& e) {
+                QMessageBox::critical(this, "Lỗi", QString("Không thể xóa khách hàng: %1").arg(e.what()));
+            }
+        }
+    });
+    
+    // Kết nối sự kiện Close
+    connect(btnClose, &QPushButton::clicked, detailDialog, &QDialog::close);
+    
+    detailDialog->exec();
+    delete detailDialog;
+}
+
 void MainWindow::onDatSanTrucQuan()
 {
     SanBookingDialog dialog(quanLy, this);
@@ -1117,6 +1186,14 @@ void MainWindow::onDatSanTrucQuan()
     // ✅ MỚI: Connect signal để refresh khách hàng khi có khách hàng mới
     connect(&dialog, &SanBookingDialog::khachHangAdded,
             this, &MainWindow::updateKhachHangTable);
+    
+    // ✅ MỚI: Connect signal để refresh lịch đặt ngay khi đặt xong
+    connect(&dialog, &SanBookingDialog::lichDatAdded,
+            this, &MainWindow::updateLichDatTable);
+    
+    // ✅ MỚI: Refresh thống kê khi đặt xong
+    connect(&dialog, &SanBookingDialog::lichDatAdded,
+            this, &MainWindow::updateThongKeDisplay);
 
     if (dialog.exec() == QDialog::Accepted)
     {
@@ -1173,7 +1250,7 @@ void MainWindow::onRefreshLichDat()
 
 void MainWindow::onThemDichVu()
 {
-    DichVuDialog dialog(this);
+    DichVuDialog dialog(quanLy, this);
     if (dialog.exec() == QDialog::Accepted)
     {
         if (quanLy->themDichVu(dialog.getMaDV(), dialog.getTenDV(),
@@ -1203,7 +1280,7 @@ void MainWindow::onSuaDichVu()
 
     if (dv)
     {
-        DichVuDialog dialog(this, dv);
+        DichVuDialog dialog(quanLy, this, dv);
         if (dialog.exec() == QDialog::Accepted)
         {
             if (quanLy->suaDichVu(maDV.toStdString(), dialog.getTenDV(),
@@ -1246,9 +1323,112 @@ void MainWindow::onRefreshDichVu()
     updateDichVuTable();
 }
 
+void MainWindow::onDichVuRowDoubleClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    
+    if (row < 0 || row >= tableDichVu->rowCount()) {
+        return;
+    }
+    
+    // Lấy thông tin dịch vụ từ row được chọn
+    QString maDV = tableDichVu->item(row, 0)->text();
+    QString tenDV = tableDichVu->item(row, 1)->text();
+    QString loaiDV = tableDichVu->item(row, 2)->text();
+    QString giaDV = tableDichVu->item(row, 3)->text();
+    QString trangThai = tableDichVu->item(row, 4)->text();
+    
+    // Tạo dialog chi tiết
+    QDialog *detailDialog = new QDialog(this);
+    detailDialog->setWindowTitle("Chi Tiết Dịch Vụ");
+    detailDialog->setMinimumWidth(450);
+    
+    QVBoxLayout *mainLayout = new QVBoxLayout(detailDialog);
+    
+    // Group box hiển thị thông tin
+    QGroupBox *infoGroup = new QGroupBox("Thông Tin Dịch Vụ", detailDialog);
+    QGridLayout *infoLayout = new QGridLayout(infoGroup);
+    
+    infoLayout->addWidget(new QLabel("<b>Mã Dịch Vụ:</b>"), 0, 0);
+    infoLayout->addWidget(new QLabel(maDV), 0, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Tên Dịch Vụ:</b>"), 1, 0);
+    infoLayout->addWidget(new QLabel(tenDV), 1, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Loại Dịch Vụ:</b>"), 2, 0);
+    infoLayout->addWidget(new QLabel(loaiDV), 2, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Giá:</b>"), 3, 0);
+    infoLayout->addWidget(new QLabel(giaDV), 3, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Trạng Thái:</b>"), 4, 0);
+    infoLayout->addWidget(new QLabel(trangThai), 4, 1);
+    
+    mainLayout->addWidget(infoGroup);
+    
+    // Buttons
+    QHBoxLayout *btnLayout = new QHBoxLayout();
+    
+    QPushButton *btnEdit = new QPushButton("✏️  Sửa", detailDialog);
+    btnEdit->setStyleSheet("QPushButton { padding: 8px 15px; background: #4CAF50; color: white; border-radius: 4px; }"
+                           "QPushButton:hover { background: #45a049; }");
+    
+    QPushButton *btnDelete = new QPushButton("🗑️  Xóa", detailDialog);
+    btnDelete->setStyleSheet("QPushButton { padding: 8px 15px; background: #f44336; color: white; border-radius: 4px; }"
+                             "QPushButton:hover { background: #da190b; }");
+    
+    QPushButton *btnClose = new QPushButton("❌  Đóng", detailDialog);
+    btnClose->setStyleSheet("QPushButton { padding: 8px 15px; background: #808080; color: white; border-radius: 4px; }"
+                            "QPushButton:hover { background: #606060; }");
+    
+    btnLayout->addWidget(btnEdit);
+    btnLayout->addWidget(btnDelete);
+    btnLayout->addStretch();
+    btnLayout->addWidget(btnClose);
+    
+    mainLayout->addLayout(btnLayout);
+    
+    // Kết nối sự kiện Edit
+    connect(btnEdit, &QPushButton::clicked, detailDialog, [this, maDV, detailDialog]() {
+        DichVu *dv = quanLy->timDichVu(maDV.toStdString());
+        if (!dv) {
+            QMessageBox::warning(this, "Lỗi", "Không tìm thấy dịch vụ!");
+            return;
+        }
+        DichVuDialog editDialog(quanLy, this, dv);
+        if (editDialog.exec() == QDialog::Accepted) {
+            updateDichVuTable();  // ✅ Load lại dữ liệu ngay
+            detailDialog->close();
+            QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin dịch vụ!");
+        }
+    });
+    
+    // Kết nối sự kiện Delete
+    connect(btnDelete, &QPushButton::clicked, detailDialog, [this, maDV, tenDV, detailDialog]() {
+        auto reply = QMessageBox::question(this, "Xác nhận", 
+                                          QString("Bạn có chắc muốn xóa dịch vụ '%1'?").arg(tenDV),
+                                          QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            if (quanLy->xoaDichVu(maDV.toStdString())) {
+                updateDichVuTable();  // ✅ Load lại dữ liệu ngay
+                detailDialog->close();
+                QMessageBox::information(this, "Thành công", "Đã xóa dịch vụ thành công!");
+            } else {
+                QMessageBox::critical(this, "Lỗi", "Không thể xóa dịch vụ!");
+            }
+        }
+    });
+    
+    // Kết nối sự kiện Close
+    connect(btnClose, &QPushButton::clicked, detailDialog, &QDialog::close);
+    
+    detailDialog->exec();
+    delete detailDialog;
+}
+
 void MainWindow::onThemNhanVien()
 {
-    NhanVienDialog dialog(this);
+    NhanVienDialog dialog(quanLy, this);
     if (dialog.exec() == QDialog::Accepted)
     {
         if (quanLy->themNhanVien(dialog.getMaNV(), dialog.getHoTen(), dialog.getSdt(),
@@ -1284,7 +1464,7 @@ void MainWindow::onSuaNhanVien()
 
     if (nv)
     {
-        NhanVienDialog dialog(this, nv);
+        NhanVienDialog dialog(quanLy, this, nv);
         if (dialog.exec() == QDialog::Accepted)
         {
             if (quanLy->suaNhanVien(maNV.toStdString(), dialog.getHoTen(), dialog.getSdt(),
@@ -1326,6 +1506,114 @@ void MainWindow::onXoaNhanVien()
 void MainWindow::onRefreshNhanVien()
 {
     updateNhanVienTable();
+}
+
+void MainWindow::onNhanVienRowDoubleClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    
+    if (row < 0 || row >= tableNhanVien->rowCount()) {
+        return;
+    }
+    
+    // Lấy thông tin nhân viên từ row được chọn
+    QString maNV = tableNhanVien->item(row, 0)->text();
+    QString hoTen = tableNhanVien->item(row, 1)->text();
+    QString sdt = tableNhanVien->item(row, 2)->text();
+    QString viTri = tableNhanVien->item(row, 3)->text();
+    QString luong = tableNhanVien->item(row, 4)->text();
+    QString trangThai = tableNhanVien->item(row, 5)->text();
+    
+    // Tạo dialog chi tiết
+    QDialog *detailDialog = new QDialog(this);
+    detailDialog->setWindowTitle("Chi Tiết Nhân Viên");
+    detailDialog->setMinimumWidth(450);
+    
+    QVBoxLayout *mainLayout = new QVBoxLayout(detailDialog);
+    
+    // Group box hiển thị thông tin
+    QGroupBox *infoGroup = new QGroupBox("Thông Tin Nhân Viên", detailDialog);
+    QGridLayout *infoLayout = new QGridLayout(infoGroup);
+    
+    infoLayout->addWidget(new QLabel("<b>Mã Nhân Viên:</b>"), 0, 0);
+    infoLayout->addWidget(new QLabel(maNV), 0, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Họ Tên:</b>"), 1, 0);
+    infoLayout->addWidget(new QLabel(hoTen), 1, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Số Điện Thoại:</b>"), 2, 0);
+    infoLayout->addWidget(new QLabel(sdt), 2, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Vị Trí:</b>"), 3, 0);
+    infoLayout->addWidget(new QLabel(viTri), 3, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Lương:</b>"), 4, 0);
+    infoLayout->addWidget(new QLabel(luong), 4, 1);
+    
+    infoLayout->addWidget(new QLabel("<b>Trạng Thái:</b>"), 5, 0);
+    infoLayout->addWidget(new QLabel(trangThai), 5, 1);
+    
+    mainLayout->addWidget(infoGroup);
+    
+    // Buttons
+    QHBoxLayout *btnLayout = new QHBoxLayout();
+    
+    QPushButton *btnEdit = new QPushButton("✏️  Sửa", detailDialog);
+    btnEdit->setStyleSheet("QPushButton { padding: 8px 15px; background: #4CAF50; color: white; border-radius: 4px; }"
+                           "QPushButton:hover { background: #45a049; }");
+    
+    QPushButton *btnDelete = new QPushButton("🗑️  Xóa", detailDialog);
+    btnDelete->setStyleSheet("QPushButton { padding: 8px 15px; background: #f44336; color: white; border-radius: 4px; }"
+                             "QPushButton:hover { background: #da190b; }");
+    
+    QPushButton *btnClose = new QPushButton("❌  Đóng", detailDialog);
+    btnClose->setStyleSheet("QPushButton { padding: 8px 15px; background: #808080; color: white; border-radius: 4px; }"
+                            "QPushButton:hover { background: #606060; }");
+    
+    btnLayout->addWidget(btnEdit);
+    btnLayout->addWidget(btnDelete);
+    btnLayout->addStretch();
+    btnLayout->addWidget(btnClose);
+    
+    mainLayout->addLayout(btnLayout);
+    
+    // Kết nối sự kiện Edit
+    connect(btnEdit, &QPushButton::clicked, detailDialog, [this, maNV, detailDialog]() {
+        NhanVien *nv = quanLy->timNhanVien(maNV.toStdString());
+        if (!nv) {
+            QMessageBox::warning(this, "Lỗi", "Không tìm thấy nhân viên!");
+            return;
+        }
+        NhanVienDialog editDialog(quanLy, this, nv);
+        if (editDialog.exec() == QDialog::Accepted) {
+            updateNhanVienTable();  // ✅ Load lại dữ liệu ngay
+            detailDialog->close();
+            QMessageBox::information(this, "Thành công", "Đã cập nhật thông tin nhân viên!");
+        }
+    });
+    
+    // Kết nối sự kiện Delete
+    connect(btnDelete, &QPushButton::clicked, detailDialog, [this, maNV, hoTen, detailDialog]() {
+        auto reply = QMessageBox::question(this, "Xác nhận", 
+                                          QString("Bạn có chắc muốn xóa nhân viên '%1'?").arg(hoTen),
+                                          QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            try {
+                quanLy->xoaNhanVien(maNV.toStdString());
+                updateNhanVienTable();  // ✅ Load lại dữ liệu ngay
+                detailDialog->close();
+                QMessageBox::information(this, "Thành công", "Đã xóa nhân viên thành công!");
+            } catch (const std::exception& e) {
+                QMessageBox::critical(this, "Lỗi", QString("Không thể xóa nhân viên: %1").arg(e.what()));
+            }
+        }
+    });
+    
+    // Kết nối sự kiện Close
+    connect(btnClose, &QPushButton::clicked, detailDialog, &QDialog::close);
+    
+    detailDialog->exec();
+    delete detailDialog;
 }
 
 void MainWindow::onXemThongKe()
@@ -1370,10 +1658,7 @@ void MainWindow::applyAccessControl()
         }
 
         // Ẩn menu Nhân viên
-        if (btnMenuNhanVien)
-        {
-            btnMenuNhanVien->setVisible(false);
-        }
+        btnMenuNhanVien.container->setVisible(false);
 
         // Ẩn page Nhân viên (page index 4)
         if (stackedWidget && stackedWidget->count() > 4)
@@ -1451,3 +1736,63 @@ void MainWindow::onChangePassword()
                               "Mật khẩu hiện tại không đúng!");
     }
 }
+
+// =====================================================
+// ✅ BACKUP & RESTORE FUNCTIONS
+// =====================================================
+
+void MainWindow::onBackupData()
+{
+    auto reply = QMessageBox::question(
+        this,
+        "💾 Sao Lưu Dữ Liệu",
+        "Bạn có muốn tạo bản sao lưu toàn bộ dữ liệu?\n\n"
+        "File backup sẽ được lưu tại: data/backup/\n"
+        "Tên file: backup_YYYYMMDD_HHMMSS_*.dat",
+        QMessageBox::Yes | QMessageBox::No);
+    
+    if (reply == QMessageBox::Yes)
+    {
+        if (quanLy->taoBackupToanBo())
+        {
+            QMessageBox::information(
+                this,
+                "✅ Thành Công",
+                "Đã tạo bản sao lưu thành công!\n\n"
+                "Vị trí: data/backup/\n"
+                "Tất cả dữ liệu đã được sao lưu an toàn.");
+        }
+        else
+        {
+            QMessageBox::critical(
+                this,
+                "❌ Lỗi",
+                "Không thể tạo bản sao lưu!\n\n"
+                "Hãy kiểm tra quyền ghi file.");
+        }
+    }
+}
+
+void MainWindow::onRestoreData()
+{
+    RestoreDialog dialog(quanLy, this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        // Data has been restored - refresh all tables
+        updateSanBongTable();
+        updateKhachHangTable();
+        updateLichDatTable();
+        updateDichVuTable();
+        updateNhanVienTable();
+        updateThongKeDisplay();
+        
+        QMessageBox::information(
+            this,
+            "🔄 Đã Khôi Phục",
+            "Dữ liệu đã được khôi phục!\n\n"
+            "Tất cả bảng đã được cập nhật.");
+    }
+}
+
+
+

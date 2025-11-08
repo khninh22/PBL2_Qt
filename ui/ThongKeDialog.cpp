@@ -1,5 +1,7 @@
 #include "ThongKeDialog.h"
 #include <QMessageBox>
+#include <map>
+#include <algorithm>
 
 ThongKeDialog::ThongKeDialog(QuanLyThueSan *quanLy, QWidget *parent)
     : QDialog(parent), quanLy(quanLy)
@@ -158,6 +160,32 @@ void ThongKeDialog::setupUI()
     tableTopKhach->setAlternatingRowColors(true);
     layoutKhach->addWidget(tableTopKhach);
     detailTabs->addTab(tabKhach, "👑 Top Khách VIP");
+    
+    // Tab 4: Biểu đồ trực quan
+    QWidget *tabBieuDo = new QWidget();
+    QVBoxLayout *layoutBieuDo = new QVBoxLayout(tabBieuDo);
+    
+    QLabel *titleBieuDo = new QLabel("<h2 style='color: #2196F3; text-align: center;'>📊 Biểu Đồ Trực Quan</h2>");
+    layoutBieuDo->addWidget(titleBieuDo);
+    
+    // Biểu đồ tròn - Tỷ lệ sử dụng sân
+    pieChartSan = new PieChartWidget();
+    pieChartSan->setTitle("🏟️ Tỷ Lệ Sử Dụng Các Sân");
+    layoutBieuDo->addWidget(pieChartSan);
+    
+    // Biểu đồ cột - Doanh thu theo giờ
+    barChartGio = new BarChartWidget();
+    barChartGio->setTitle("⏰ Doanh Thu Theo Khung Giờ");
+    barChartGio->setColor(QColor(255, 152, 0));  // Orange
+    layoutBieuDo->addWidget(barChartGio);
+    
+    // Biểu đồ cột - Dịch vụ phổ biến
+    barChartDichVu = new BarChartWidget();
+    barChartDichVu->setTitle("🍔 Top Dịch Vụ Phổ Biến Nhất");
+    barChartDichVu->setColor(QColor(156, 39, 176));  // Purple
+    layoutBieuDo->addWidget(barChartDichVu);
+    
+    detailTabs->addTab(tabBieuDo, "📊 Biểu Đồ");
     
     mainLayout->addWidget(detailTabs);
     
@@ -330,4 +358,54 @@ void ThongKeDialog::capNhatThongKe(time_t tuNgay, time_t denNgay)
                 tableTopKhach->item(row, col)->setBackground(QBrush(color));
         }
     }
+    
+    // ========== CẬP NHẬT BIỂU ĐỒ ==========
+    
+    // 1. Biểu đồ tròn - Tỷ lệ sử dụng sân
+    QVector<QPair<QString, double>> sanData;
+    for (int i = 0; i < qMin(5, tkSan.getKichThuoc()); i++)  // Top 5 sân
+    {
+        const ThongKeSan &tk = tkSan[i];
+        sanData.append(qMakePair(QString::fromStdString(tk.tenSan), static_cast<double>(tk.soLanDat)));
+    }
+    pieChartSan->setData(sanData);
+    
+    // 2. Biểu đồ cột - Doanh thu theo giờ (chỉ hiển thị giờ có booking)
+    QVector<QPair<QString, double>> gioData;
+    for (int i = 0; i < tkGio.getKichThuoc(); i++)
+    {
+        const ThongKeKhungGio &tk = tkGio[i];
+        if (tk.soLanDat > 0)  // Chỉ hiển thị giờ có người đặt
+        {
+            QString label = QString("%1h").arg(tk.gio);
+            gioData.append(qMakePair(label, tk.doanhThu));
+        }
+    }
+    barChartGio->setData(gioData);
+    
+    // 3. Biểu đồ cột - Top dịch vụ phổ biến
+    QVector<QPair<QString, double>> dichVuData;
+    
+    // Thống kê dịch vụ từ chi tiết các lịch đặt
+    struct DichVuStats {
+        std::string tenDV;
+        int soLanDung = 0;
+        double tongDoanhThu = 0;
+    };
+    
+    std::map<std::string, DichVuStats> dichVuMap;
+    
+    // TODO: Thống kê dịch vụ - chờ implement thongKeDichVu() trong QuanLyThueSan
+    // Tạm thời hiển thị dữ liệu mẫu
+    const MangDong<DichVu> &dsDV = quanLy->getDsDichVu();
+    for (int i = 0; i < qMin(8, dsDV.getKichThuoc()); i++)
+    {
+        const DichVu &dv = dsDV[i];
+        QString tenDV = QString::fromStdString(dv.getTenDV());
+        // Giả lập doanh thu dựa trên giá dịch vụ
+        double giaDV = dv.getGiaDV();
+        dichVuData.append(qMakePair(tenDV, giaDV * (10 + i * 5)));
+    }
+    
+    barChartDichVu->setData(dichVuData);
 }

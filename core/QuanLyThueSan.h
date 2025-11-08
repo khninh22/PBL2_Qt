@@ -8,6 +8,8 @@
 #include "managers/DichVuManager.h"
 #include "managers/NhanVienManager.h"
 #include "managers/ThanhToanManager.h"
+#include "managers/FileManager.h"
+#include "managers/BackupManager.h"
 
 // Include các class cần thiết
 #include "SanBong.h"
@@ -36,6 +38,11 @@ private:
     DichVuManager dichVuMgr;
     NhanVienManager nhanVienMgr;
     ThanhToanManager thanhToanMgr;
+    FileManager fileMgr;
+    BackupManager backupMgr;
+    
+    // ✅ NEW: Helper method to resolve object pointers after loading
+    void resolveObjectPointers();
 
 public:
     // Constructor
@@ -143,6 +150,13 @@ public:
     void taiDuLieu();
     void luuDuLieu();
     void khoiTaoDuLieuMau();
+    
+    // ============================
+    //  ✅ BACKUP & RESTORE
+    // ============================
+    bool taoBackupToanBo();
+    bool khoiPhucDuLieu(const string &tenBackup);
+    MangDong<string> layDanhSachBackup();
 
     // ============================
     //  REBUILD INDEX (gọi cho tất cả managers)

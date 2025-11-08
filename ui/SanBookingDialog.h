@@ -52,6 +52,7 @@ class SanBookingDialog : public QDialog
 
 signals:
     void khachHangAdded(); // ✅ Signal để thông báo khách hàng mới được thêm
+    void lichDatAdded();   // ✅ Signal để thông báo lịch đặt mới được thêm
 
 public:
     explicit SanBookingDialog(QuanLyThueSan *quanLy, QWidget *parent = nullptr);
